@@ -35,7 +35,7 @@ type Token @entity {
   name: String!
   decimals: BigInt!
 
-  # used for other stalts like marketcap
+  # used for other stats like marketcap
   totalSupply: BigInt!
 
   # token specific volume
