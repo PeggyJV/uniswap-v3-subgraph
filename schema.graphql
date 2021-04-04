@@ -57,9 +57,9 @@ type Token @entity {
   derivedETH: BigDecimal
 
   # derived fields
-  tokenDayData: [TokenDayData!]! @derivedFrom(field: "token")
-  poolDayDataBase: [PoolDayData!]! @derivedFrom(field: "token0")
-  poolDayDataQuote: [PoolDayData!]! @derivedFrom(field: "token1")
+#   tokenDayData: [TokenDayData!]! @derivedFrom(field: "token")
+#   poolDayDataBase: [PoolDayData!]! @derivedFrom(field: "token0")
+#   poolDayDataQuote: [PoolDayData!]! @derivedFrom(field: "token1")
   pairBase: [Pool!]! @derivedFrom(field: "token0")
   pairQuote: [Pool!]! @derivedFrom(field: "token1")
 }
@@ -119,11 +119,11 @@ type Pool @entity {
   # Fields used to help derived relationship
   liquidityProviderCount: BigInt! # used to detect new exchanges
   # derived fields
-  poolHourData: [PoolHourData!]! @derivedFrom(field: "pool")
-  mints: [Mint!]! @derivedFrom(field: "pool")
-  burns: [Burn!]! @derivedFrom(field: "pool")
-  swaps: [Swap!]! @derivedFrom(field: "pool")
-  ticks: [Tick!]! @derivedFrom(field: "pool")
+#   poolHourData: [PoolHourData!]! @derivedFrom(field: "pool")
+#   mints: [Mint!]! @derivedFrom(field: "pool")
+#   burns: [Burn!]! @derivedFrom(field: "pool")
+#   swaps: [Swap!]! @derivedFrom(field: "pool")
+#   ticks: [Tick!]! @derivedFrom(field: "pool")
 }
 
 type Tick @entity {
@@ -176,10 +176,10 @@ type Tick @entity {
   # Fields used to help derived relationship
   liquidityProviderCount: BigInt! # used to detect new exchanges
   # derived fields
-  pairHourData: [PoolHourData!]! @derivedFrom(field: "pool")
-  mints: [Mint!]! @derivedFrom(field: "pool")
-  burns: [Burn!]! @derivedFrom(field: "pool")
-  swaps: [Swap!]! @derivedFrom(field: "pool")
+#   pairHourData: [PoolHourData!]! @derivedFrom(field: "pool")
+#   mints: [Mint!]! @derivedFrom(field: "pool")
+#   burns: [Burn!]! @derivedFrom(field: "pool")
+#   swaps: [Swap!]! @derivedFrom(field: "pool")
 }
 
 type Transaction @entity {
@@ -194,167 +194,167 @@ type Transaction @entity {
   collects: [Collect]!
 }
 
-type Mint @entity {
-  # transaction hash + "-" + index in mints Transaction array
-  id: ID!
-  transaction: Transaction!
-  timestamp: BigInt! # need this to pull recent txns for specific token or pair
-  pool: Pool!
+# type Mint @entity {
+#   # transaction hash + "-" + index in mints Transaction array
+#   id: ID!
+#   transaction: Transaction!
+#   timestamp: BigInt! # need this to pull recent txns for specific token or pair
+#   pool: Pool!
 
-  # populated from the primary Transfer event
-  to: Bytes!
-  liquidity: BigDecimal!
+#   # populated from the primary Transfer event
+#   to: Bytes!
+#   liquidity: BigDecimal!
 
-  # populated from the Mint event
-  sender: Bytes
-  amount0: BigDecimal
-  amount1: BigDecimal
-  tickLower: BigInt
-  tickUpper: BigInt
-  logIndex: BigInt
-  # derived amount based on available prices of tokens
-  amountUSD: BigDecimal
+#   # populated from the Mint event
+#   sender: Bytes
+#   amount0: BigDecimal
+#   amount1: BigDecimal
+#   tickLower: BigInt
+#   tickUpper: BigInt
+#   logIndex: BigInt
+#   # derived amount based on available prices of tokens
+#   amountUSD: BigDecimal
 
-  # optional fee fields, if a Transfer event is fired in _mintFee
-  feeTo: Bytes
-  feeLiquidity: BigDecimal
-}
+#   # optional fee fields, if a Transfer event is fired in _mintFee
+#   feeTo: Bytes
+#   feeLiquidity: BigDecimal
+# }
 
-type Burn @entity {
-  # transaction hash + "-" + index in mints Transaction array
-  id: ID!
-  transaction: Transaction!
-  timestamp: BigInt! # need this to pull recent txns for specific token or pair
-  pair: Pool!
+# type Burn @entity {
+#   # transaction hash + "-" + index in mints Transaction array
+#   id: ID!
+#   transaction: Transaction!
+#   timestamp: BigInt! # need this to pull recent txns for specific token or pair
+#   pair: Pool!
 
-  # populated from the primary Transfer event
-  liquidity: BigDecimal!
+#   # populated from the primary Transfer event
+#   liquidity: BigDecimal!
 
-  # populated from the Burn event
-  sender: Bytes
-  amount0: BigDecimal
-  amount1: BigDecimal
-  tickLower: BigInt
-  tickUpper: BigInt
-  to: Bytes
-  logIndex: BigInt
-  # derived amount based on available prices of tokens
-  amountUSD: BigDecimal
+#   # populated from the Burn event
+#   sender: Bytes
+#   amount0: BigDecimal
+#   amount1: BigDecimal
+#   tickLower: BigInt
+#   tickUpper: BigInt
+#   to: Bytes
+#   logIndex: BigInt
+#   # derived amount based on available prices of tokens
+#   amountUSD: BigDecimal
 
-  # mark uncomplete in ETH case
-  needsComplete: Boolean!
+#   # mark uncomplete in ETH case
+#   needsComplete: Boolean!
 
-  # optional fee fields, if a Transfer event is fired in _mintFee
-  feeTo: Bytes
-  feeLiquidity: BigDecimal
-}
+#   # optional fee fields, if a Transfer event is fired in _mintFee
+#   feeTo: Bytes
+#   feeLiquidity: BigDecimal
+# }
 
-type Swap @entity {
-  # transaction hash + "-" + index in swaps Transaction array
-  id: ID!
-  transaction: Transaction!
-  timestamp: BigInt! # need this to pull recent txns for specific token or pair
-  pair: Pool!
+# type Swap @entity {
+#   # transaction hash + "-" + index in swaps Transaction array
+#   id: ID!
+#   transaction: Transaction!
+#   timestamp: BigInt! # need this to pull recent txns for specific token or pair
+#   pair: Pool!
 
-  # populated from the Swap event
-  sender: Bytes!
-  from: Bytes! # the EOA that initiated the txn
-  amount0In: BigDecimal!
-  amount1In: BigDecimal!
-  amount0Out: BigDecimal!
-  amount1Out: BigDecimal!
-  sqrtPrices: BigDecimal!
-  tick: Tick!
+#   # populated from the Swap event
+#   sender: Bytes!
+#   from: Bytes! # the EOA that initiated the txn
+#   amount0In: BigDecimal!
+#   amount1In: BigDecimal!
+#   amount0Out: BigDecimal!
+#   amount1Out: BigDecimal!
+#   sqrtPrices: BigDecimal!
+#   tick: Tick!
 
-  to: Bytes!
-  logIndex: BigInt
+#   to: Bytes!
+#   logIndex: BigInt
 
-  # derived info
-  amountUSD: BigDecimal!
-}
+#   # derived info
+#   amountUSD: BigDecimal!
+# }
 
-# stores for USD calculations
-type Bundle @entity {
-  id: ID!
-  ethPrice: BigDecimal! # price of ETH usd
-}
+# # stores for USD calculations
+# type Bundle @entity {
+#   id: ID!
+#   ethPrice: BigDecimal! # price of ETH usd
+# }
 
-# Data accumulated and condensed into day stats for all of Uniswap
-type UniswapDayData @entity {
-  id: ID! # timestamp rounded to current day by dividing by 86400
-  date: Int!
+# # Data accumulated and condensed into day stats for all of Uniswap
+# type UniswapDayData @entity {
+#   id: ID! # timestamp rounded to current day by dividing by 86400
+#   date: Int!
 
-  dailyVolumeETH: BigDecimal!
-  dailyVolumeUSD: BigDecimal!
-  dailyVolumeUntracked: BigDecimal!
+#   dailyVolumeETH: BigDecimal!
+#   dailyVolumeUSD: BigDecimal!
+#   dailyVolumeUntracked: BigDecimal!
 
-  totalVolumeETH: BigDecimal!
-  totalLiquidityETH: BigDecimal!
-  totalVolumeUSD: BigDecimal! # Accumulate at each trade, not just calculated off whatever totalVolume is. making it more accurate as it is a live conversion
-  totalLiquidityUSD: BigDecimal!
+#   totalVolumeETH: BigDecimal!
+#   totalLiquidityETH: BigDecimal!
+#   totalVolumeUSD: BigDecimal! # Accumulate at each trade, not just calculated off whatever totalVolume is. making it more accurate as it is a live conversion
+#   totalLiquidityUSD: BigDecimal!
 
-  txCount: BigInt!
-}
+#   txCount: BigInt!
+# }
 
-# TODO: Higher resolutions
+# # TODO: Higher resolutions
 
-type PoolHourData @entity {
-  id: ID!
-  hourStartUnix: Int! # unix timestamp for start of hour
-  pair: Pool!
+# type PoolHourData @entity {
+#   id: ID!
+#   hourStartUnix: Int! # unix timestamp for start of hour
+#   pair: Pool!
 
-  # reserves
-  reserve0: BigDecimal!
-  reserve1: BigDecimal!
+#   # reserves
+#   reserve0: BigDecimal!
+#   reserve1: BigDecimal!
 
-  # derived liquidity
-  reserveUSD: BigDecimal!
+#   # derived liquidity
+#   reserveUSD: BigDecimal!
 
-  # volume stats
-  hourlyVolumeToken0: BigDecimal!
-  hourlyVolumeToken1: BigDecimal!
-  hourlyVolumeUSD: BigDecimal!
-  hourlyTxns: BigInt!
-}
+#   # volume stats
+#   hourlyVolumeToken0: BigDecimal!
+#   hourlyVolumeToken1: BigDecimal!
+#   hourlyVolumeUSD: BigDecimal!
+#   hourlyTxns: BigInt!
+# }
 
-# Data accumulated and condensed into day stats for each exchange
-type PoolDayData @entity {
-  id: ID!
-  date: Int!
-  pairAddress: Bytes!
-  token0: Token!
-  token1: Token!
+# # Data accumulated and condensed into day stats for each exchange
+# type PoolDayData @entity {
+#   id: ID!
+#   date: Int!
+#   pairAddress: Bytes!
+#   token0: Token!
+#   token1: Token!
 
-  # reserves
-  reserve0: BigDecimal!
-  reserve1: BigDecimal!
+#   # reserves
+#   reserve0: BigDecimal!
+#   reserve1: BigDecimal!
 
-  # derived liquidity
-  reserveUSD: BigDecimal!
+#   # derived liquidity
+#   reserveUSD: BigDecimal!
 
-  # volume stats
-  dailyVolumeToken0: BigDecimal!
-  dailyVolumeToken1: BigDecimal!
-  dailyVolumeUSD: BigDecimal!
-  dailyTxns: BigInt!
-}
+#   # volume stats
+#   dailyVolumeToken0: BigDecimal!
+#   dailyVolumeToken1: BigDecimal!
+#   dailyVolumeUSD: BigDecimal!
+#   dailyTxns: BigInt!
+# }
 
-type TokenDayData @entity {
-  id: ID!
-  date: Int!
-  token: Token!
+# type TokenDayData @entity {
+#   id: ID!
+#   date: Int!
+#   token: Token!
 
-  # volume stats
-  dailyVolumeToken: BigDecimal!
-  dailyVolumeETH: BigDecimal!
-  dailyVolumeUSD: BigDecimal!
-  dailyTxns: BigInt!
+#   # volume stats
+#   dailyVolumeToken: BigDecimal!
+#   dailyVolumeETH: BigDecimal!
+#   dailyVolumeUSD: BigDecimal!
+#   dailyTxns: BigInt!
 
-  # liquidity stats
-  totalLiquidityToken: BigDecimal!
-  totalLiquidityETH: BigDecimal!
-  totalLiquidityUSD: BigDecimal!
+#   # liquidity stats
+#   totalLiquidityToken: BigDecimal!
+#   totalLiquidityETH: BigDecimal!
+#   totalLiquidityUSD: BigDecimal!
 
-  # price stats
-  priceUSD: BigDecimal!
-}
+#   # price stats
+#   priceUSD: BigDecimal!
+# }
