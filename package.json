@@ -6,8 +6,8 @@
   "scripts": {
     "codegen": "graph codegen --output-dir src/types/",
     "build": "graph build",
-    "create-local": "graph create davekaj/uniswap --node http://127.0.0.1:8020",
-    "deploy-local": "graph deploy davekaj/uniswap --debug --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
+    "create-local": "graph create sommelier/uniswapv3 --node http://127.0.0.1:8020",
+    "deploy-local": "graph deploy sommelier/uniswapv3 --debug --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.16.0",

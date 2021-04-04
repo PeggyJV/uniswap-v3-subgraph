@@ -21,7 +21,7 @@ dataSources:
         - Token
       abis:
         - name: Factory
-          file: ./abis/factory.json
+          file: ./abis/UniswapV3Factory.json
         - name: ERC20
           file: ./abis/ERC20.json
         - name: ERC20SymbolBytes
@@ -29,35 +29,35 @@ dataSources:
         - name: ERC20NameBytes
           file: ./abis/ERC20NameBytes.json
       eventHandlers:
-        - event: PairCreated(indexed address,indexed address,address,uint256)
-          handler: handleNewPair
+        - event: PoolCreated(indexed address,indexed address,indexed uint24,int24,address)
+          handler: handleNewPool
 templates:
   - kind: ethereum/contract
-    name: Pair
+    name: Pool
     network: mainnet
     source:
-      abi: Pair
+      abi: Pool
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
       language: wasm/assemblyscript
-      file: ./src/mappings/core.ts
+      file: ./src/mappings/pool.ts
       entities:
-        - Pair
+        - Pool
         - Token
       abis:
-        - name: Pair
-          file: ./abis/pair.json
+        - name: Pool
+          file: ./abis/UniswapV3Pool.json
         - name: Factory
-          file: ./abis/factory.json
+          file: ./abis/UniswapV3Factory.json
       eventHandlers:
-        - event: Mint(indexed address,uint256,uint256)
-          handler: handleMint
-        - event: Burn(indexed address,uint256,uint256,indexed address)
-          handler: handleBurn
-        - event: Swap(indexed address,uint256,uint256,uint256,uint256,indexed address)
-          handler: handleSwap
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
-        - event: Sync(uint112,uint112)
-          handler: handleSync
+        # - event: Mint(indexed address,uint256,uint256)
+        #   handler: handleMint
+        # - event: Burn(indexed address,uint256,uint256,indexed address)
+        #   handler: handleBurn
+        # - event: Swap(indexed address,uint256,uint256,uint256,uint256,indexed address)
+        #   handler: handleSwap
+        # - event: Transfer(indexed address,indexed address,uint256)
+        #   handler: handleTransfer
+        - event: Initialize(uint160,int24)
+          handler: noop

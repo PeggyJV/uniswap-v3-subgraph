@@ -21,9 +21,6 @@ type UniswapFactory @entity {
 
   # transactions
   txCount: BigInt!
-
-  # number of created pools
-  poolCount: BigInt!
 }
 
 type Token @entity {
@@ -96,6 +93,7 @@ type Pool @entity {
   volumeToken1: BigDecimal!
   volumeUSD: BigDecimal!
   untrackedVolumeUSD: BigDecimal!
+  combinedVolumeUSD: BigDecimal!
   txCount: BigInt!
 
   # derived states about fees and collections
@@ -188,10 +186,10 @@ type Transaction @entity {
   timestamp: BigInt!
   # This is not the reverse of Mint.transaction; it is only used to
   # track incomplete mints (similar for burns and swaps)
-  mints: [Mint]!
-  burns: [Burn]!
-  swaps: [Swap]!
-  collects: [Collect]!
+#   mints: [Mint]!
+#   burns: [Burn]!
+#   swaps: [Swap]!
+#   collects: [Collect]!
 }
 
 # type Mint @entity {
@@ -273,11 +271,11 @@ type Transaction @entity {
 #   amountUSD: BigDecimal!
 # }
 
-# # stores for USD calculations
-# type Bundle @entity {
-#   id: ID!
-#   ethPrice: BigDecimal! # price of ETH usd
-# }
+# stores for USD calculations
+type Bundle @entity {
+  id: ID!
+  ethPrice: BigDecimal! # price of ETH usd
+}
 
 # # Data accumulated and condensed into day stats for all of Uniswap
 # type UniswapDayData @entity {
