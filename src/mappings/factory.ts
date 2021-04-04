@@ -1,5 +1,5 @@
 /* eslint-disable prefer-const */
-import { log } from '@graphprotocol/graph-ts'
+import { log, BigInt } from '@graphprotocol/graph-ts'
 import { UniswapFactory, Pool, Token, Bundle } from '../types/schema'
 import { PoolCreated } from '../types/Factory/Factory'
 // import { Pool as PoolTemplate } from '../types/templates'
@@ -23,6 +23,7 @@ export function handleNewPool(event: PoolCreated): void {
     factory.totalLiquidityETH = ZERO_BD
     factory.totalVolumeUSD = ZERO_BD
     factory.untrackedVolumeUSD = ZERO_BD
+    factory.combinedVolumeUSD = ZERO_BD
     factory.totalLiquidityUSD = ZERO_BD
     factory.txCount = ZERO_BI
 
@@ -56,7 +57,8 @@ export function handleNewPool(event: PoolCreated): void {
     token0.tradeVolume = ZERO_BD
     token0.tradeVolumeUSD = ZERO_BD
     token0.untrackedVolumeUSD = ZERO_BD
-    token0.totalLiquidity = ZERO_BD
+    token0.combinedVolumeUSD = ZERO_BD // SOMMELIER: tracked and untracked volume combined
+    token1.totalLiquidity = ZERO_BD
     // token0.allPairs = []
     token0.txCount = ZERO_BI
     token0.poolCount = ZERO_BI
@@ -79,6 +81,7 @@ export function handleNewPool(event: PoolCreated): void {
     token1.tradeVolume = ZERO_BD
     token1.tradeVolumeUSD = ZERO_BD
     token1.untrackedVolumeUSD = ZERO_BD
+    token1.combinedVolumeUSD = ZERO_BD // SOMMELIER: tracked and untracked volume combined
     token1.totalLiquidity = ZERO_BD
     // token1.allPairs = []
     token1.txCount = ZERO_BI
@@ -88,8 +91,8 @@ export function handleNewPool(event: PoolCreated): void {
   let pool = new Pool(event.params.pool.toHexString()) as Pool
   pool.token0 = token0.id
   pool.token1 = token1.id
-  pool.feeTier = event.params.fee
-  pool.tickSpacing = event.params.tickSpacing
+  pool.feeTier = BigInt.fromI32(event.params.fee as i32);
+  pool.tickSpacing = BigInt.fromI32(event.params.tickSpacing as i32);
   pool.createdAtTimestamp = event.block.timestamp
   pool.createdAtBlockNumber = event.block.number
 

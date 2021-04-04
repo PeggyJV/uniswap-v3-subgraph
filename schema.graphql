@@ -68,8 +68,8 @@ type Pool @entity {
   # mirrored from the smart contract
   token0: Token!
   token1: Token!
-  feeTier: BigDecimal!
-  tickSpacing: BigDecimal!
+  feeTier: BigInt!
+  tickSpacing: BigInt!
 
   # base values of liquidity and sqrtPrice across entire pool
   liquidity: BigDecimal!
