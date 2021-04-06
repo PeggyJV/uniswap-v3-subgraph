@@ -28,5 +28,8 @@
 ## Minor/Sommelier-Specific Changes
 
 * Added `combinedXXX` fields e.g. (`combinedVolumeUSD`)
-* High-fidelity minute-level time window, in addition to hour/day - `PoolMinuteData` - could do more but worried about size of the tables. With highest-fidelity option, one could also aggregate on the client side to get e.g. 10-minute ticker data. Also normalized some fields across thems
+* High-fidelity minute-level time window, in addition to hour/day - `PoolMinuteData` - could do more but worried about size of the tables. With highest-fidelity option, one could also aggregate on the client side to get e.g. 10-minute ticker data. Also normalized some fields across themes:
+  * took our `hourlyXXX`/`dailyXXX` and replaced it with `periodXXX` across all time windows
+  * Changed all dates to `periodStartUnix`
+  * Removed `poolAddress` from DayData and made everything reference `Pool`
 * Thinking about doing OHLC for `PoolDayData`, `PoolHourData`, `PoolMinuteData` - all straightforward to calculate except close

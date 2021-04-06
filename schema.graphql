@@ -308,7 +308,9 @@ type UniswapDayData @entity {
 type PoolMinuteData @entity {
   id: ID!
   periodStartUnix: Int! # unix timestamp for start of minute
-  pools: Pool!
+  pool: Pool!
+  token0: Token!
+  token1: Token!
 
   # reserves at end of period
   liquidity: BigDecimal!
@@ -330,7 +332,9 @@ type PoolHourData @entity {
   id: ID!
   periodStartUnix: Int! # unix timestamp for start of hour
   pool: Pool!
-
+  token0: Token!
+  token1: Token!
+  
   # reserves at end of period
   liquidity: BigDecimal!
   sqrtPrice: BigDecimal!
@@ -351,7 +355,7 @@ type PoolHourData @entity {
 type PoolDayData @entity {
   id: ID!
   date: Int!
-  poolAddresss: Bytes!
+  pool: Pool!
   token0: Token!
   token1: Token!
 
