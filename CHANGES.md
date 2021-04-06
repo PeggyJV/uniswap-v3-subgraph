@@ -32,4 +32,5 @@
   * took our `hourlyXXX`/`dailyXXX` and replaced it with `periodXXX` across all time windows
   * Changed all dates to `periodStartUnix`
   * Removed `poolAddress` from DayData and made everything reference `Pool`
+  * Also did minute/hour/day aggregated data for ticks - pros/cons are basically the same as mentioned above
 * Thinking about doing OHLC for `PoolDayData`, `PoolHourData`, `PoolMinuteData` - all straightforward to calculate except close
