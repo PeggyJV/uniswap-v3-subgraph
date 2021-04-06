@@ -1,4 +1,5 @@
-# Uniswap V2 Subgraph
+### Note: Still needs updating for V3. See [CHANGES.md](CHANGES.md) for schema changes.
+# Uniswap V3 Subgraph
 
 [Uniswap](https://uniswap.org/) is a decentralized protocol for automated token exchange on Ethereum.
 
