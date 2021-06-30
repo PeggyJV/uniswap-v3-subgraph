@@ -50,7 +50,7 @@ function loadTickUpdateFeeVarsAndSave(tickId: i32, event: ethereum.Event): void 
 
 function updateSingleTickVolume(
   event: ethereum.Event,
-  tickId: i32, 
+  tickIdx: i32, 
   pool: Pool,
   token0: Token,
   token1: Token,
@@ -58,11 +58,16 @@ function updateSingleTickVolume(
   amount0Abs: BigDecimal, 
   amount1Abs: BigDecimal
 ): void {
-  let tick = Tick.load(
-    pool.id
-      .concat('#')
-      .concat(tickId.toString())
-  )
+  let tickId = pool.id
+    .concat('#')
+    .concat(tickIdx.toString())
+
+  let tick = Tick.load(tickId)
+  
+  if (tick == null) {
+    // tick might not be initialized - create it
+    tick = createTick(tickId, tickIdx, pool.id, event)
+  }
 
   if (tick != null) {
     // tick might not be initialized
