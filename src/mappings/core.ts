@@ -24,6 +24,7 @@ import {
   updateUniswapDayData,
 } from '../utils/intervalUpdates'
 import { createTick, feeTierToTickSpacing } from '../utils/tick'
+import { isTrackedPool } from '../utils/tracked-pools';
 
 let MAX_TICK = BigInt.fromI32(887282);
 let MIN_TICK = MAX_TICK.times(BigInt.fromI32(-1))
@@ -131,6 +132,10 @@ function updateSingleTickVolume(
 }
 
 export function handleInitialize(event: Initialize): void {
+  if (!isTrackedPool(event.address.toHexString())) {
+    return
+  }
+
   let pool = Pool.load(event.address.toHexString())
   pool.sqrtPrice = event.params.sqrtPriceX96
   pool.tick = BigInt.fromI32(event.params.tick)
@@ -155,6 +160,10 @@ export function handleInitialize(event: Initialize): void {
 }
 
 export function handleMint(event: MintEvent): void {
+  if (!isTrackedPool(event.address.toHexString())) {
+    return
+  }
+
   let bundle = Bundle.load('1')
   let poolAddress = event.address.toHexString()
   let pool = Pool.load(poolAddress)
@@ -275,6 +284,10 @@ export function handleMint(event: MintEvent): void {
 }
 
 export function handleBurn(event: BurnEvent): void {
+  if (!isTrackedPool(event.address.toHexString())) {
+    return
+  }
+
   let bundle = Bundle.load('1')
   let poolAddress = event.address.toHexString()
   let pool = Pool.load(poolAddress)
@@ -375,6 +388,10 @@ export function handleBurn(event: BurnEvent): void {
 }
 
 export function handleSwap(event: SwapEvent): void {
+  if (!isTrackedPool(event.address.toHexString())) {
+    return
+  }
+
   let bundle = Bundle.load('1')
   let factory = Factory.load(FACTORY_ADDRESS)
   let pool = Pool.load(event.address.toHexString())
@@ -583,6 +600,10 @@ export function handleSwap(event: SwapEvent): void {
 }
 
 export function handleFlash(event: FlashEvent): void {
+  if (!isTrackedPool(event.address.toHexString())) {
+    return
+  }
+  
   // update fee growth
   let pool = Pool.load(event.address.toHexString())
   let poolContract = PoolABI.bind(event.address)

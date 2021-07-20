@@ -8,6 +8,8 @@ import { Pool as PoolTemplate } from '../types/templates'
 import { fetchTokenSymbol, fetchTokenName, fetchTokenTotalSupply, fetchTokenDecimals } from '../utils/token'
 import { log, BigInt, Address } from '@graphprotocol/graph-ts'
 
+import { isTrackedPool } from '../utils/tracked-pools';
+
 export function handlePoolCreated(event: PoolCreated): void {
   // // temp fix
   // if (event.params.pool == Address.fromHexString('0x8fe8d9bb8eeba3ed688069c3d6b556c9ca258248')) {
@@ -39,7 +41,12 @@ export function handlePoolCreated(event: PoolCreated): void {
 
   factory.poolCount = factory.poolCount.plus(ONE_BI)
 
+  if (!isTrackedPool(event.params.pool.toHexString())) {
+    return
+  }
+
   let pool = new Pool(event.params.pool.toHexString()) as Pool
+
   let token0 = Token.load(event.params.token0.toHexString())
   let token1 = Token.load(event.params.token1.toHexString())
 
