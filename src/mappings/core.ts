@@ -9,7 +9,7 @@ import {
   Mint as MintEvent,
   Swap as SwapEvent
 } from '../types/templates/Pool/Pool'
-import { convertTokenToDecimal, loadTransaction, safeDiv, bigDecimalExponated, exponentToBigDecimal, getSqrtRatioAtTick, safeDivBigInt } from '../utils'
+import { convertTokenToDecimal, loadTransaction, safeDiv } from '../utils'
 import { FACTORY_ADDRESS, ONE_BI, ZERO_BD, ONE_BD, ZERO_BI } from '../utils/constants'
 import { findEthPerToken, getEthPriceInUSD, getTrackedAmountUSD, sqrtPriceX96ToTokenPrices } from '../utils/pricing'
 import {
@@ -33,10 +33,21 @@ function updateTickFeeVarsAndSave(tick: Tick, event: ethereum.Event): void {
   let poolAddress = event.address
   // not all ticks are initialized so obtaining null is expected behavior
   let poolContract = PoolABI.bind(poolAddress)
-  let tickResult = poolContract.ticks(tick.tickIdx.toI32())
-  tick.feeGrowthOutside0X128 = tickResult.value2
-  tick.feeGrowthOutside1X128 = tickResult.value3
-  tick.save()
+  let tickCall = poolContract.try_ticks(tick.tickIdx.toI32());
+
+  if (!tickCall.reverted) {
+    let tickResult = tickCall.value
+
+    if (tickResult.value2) {
+      tick.feeGrowthOutside0X128 = tickResult.value2
+    }
+
+    if (tickResult.value3) {
+      tick.feeGrowthOutside1X128 = tickResult.value3
+    }
+    
+    tick.save()
+  }
 }
 
 function loadTickUpdateFeeVarsAndSave(tickId: i32, event: ethereum.Event): void {
@@ -48,7 +59,7 @@ function loadTickUpdateFeeVarsAndSave(tickId: i32, event: ethereum.Event): void 
       .concat(tickId.toString())
   )
   if (tick !== null) {
-    updateTickFeeVarsAndSave(tick!, event)
+    // updateTickFeeVarsAndSave(tick!, event)
   }
 }
 
@@ -255,10 +266,22 @@ export function handleMint(event: MintEvent): void {
   }
 
   let amount = event.params.amount
-  lowerTick.liquidityGross = lowerTick.liquidityGross.plus(amount)
-  lowerTick.liquidityNet = lowerTick.liquidityNet.plus(amount)
-  upperTick.liquidityGross = upperTick.liquidityGross.plus(amount)
-  upperTick.liquidityNet = upperTick.liquidityNet.minus(amount)
+
+  if (lowerTick.liquidityGross) {
+    lowerTick.liquidityGross = lowerTick.liquidityGross.plus(amount)
+  }
+
+  if (lowerTick.liquidityNet) {
+    lowerTick.liquidityNet = lowerTick.liquidityNet.plus(amount)
+  }
+
+  if (upperTick.liquidityGross) {
+    upperTick.liquidityGross = upperTick.liquidityGross.plus(amount)
+  }
+
+  if (upperTick.liquidityNet) {
+    upperTick.liquidityNet = upperTick.liquidityNet.minus(amount)
+  }
 
   // TODO: Update Tick's volume, fees, and liquidity provider count. Computing these on the tick
   // level requires reimplementing some of the swapping code from v3-core.
@@ -279,8 +302,8 @@ export function handleMint(event: MintEvent): void {
   mint.save()
 
   // Update inner tick vars and save the ticks
-  updateTickFeeVarsAndSave(lowerTick!, event)
-  updateTickFeeVarsAndSave(upperTick!, event)
+  // updateTickFeeVarsAndSave(lowerTick!, event)
+  // updateTickFeeVarsAndSave(upperTick!, event)
 }
 
 export function handleBurn(event: BurnEvent): void {
@@ -365,11 +388,27 @@ export function handleBurn(event: BurnEvent): void {
   let lowerTick = Tick.load(lowerTickId)
   let upperTick = Tick.load(upperTickId)
   let amount = event.params.amount
-  lowerTick.liquidityGross = lowerTick.liquidityGross.minus(amount)
-  lowerTick.liquidityNet = lowerTick.liquidityNet.minus(amount)
-  upperTick.liquidityGross = upperTick.liquidityGross.minus(amount)
-  upperTick.liquidityNet = upperTick.liquidityNet.plus(amount)
 
+  if (lowerTick) {
+    if (lowerTick.liquidityGross) {
+      lowerTick.liquidityGross = lowerTick.liquidityGross.plus(amount)
+    }
+  
+    if (lowerTick.liquidityNet) {
+      lowerTick.liquidityNet = lowerTick.liquidityNet.minus(amount)
+    }
+  }
+
+  if (upperTick) {
+    if (upperTick.liquidityGross) {
+      upperTick.liquidityGross = upperTick.liquidityGross.minus(amount)
+    }
+  
+    if (upperTick.liquidityNet) {
+      upperTick.liquidityNet = upperTick.liquidityNet.plus(amount)
+    }
+  }
+  
   updateUniswapDayData(event)
   updatePoolDayData(event)
   updatePoolHourData(event)
@@ -377,8 +416,8 @@ export function handleBurn(event: BurnEvent): void {
   updateTokenDayData(token1 as Token, event)
   updateTokenHourData(token0 as Token, event)
   updateTokenHourData(token1 as Token, event)
-  updateTickFeeVarsAndSave(lowerTick!, event)
-  updateTickFeeVarsAndSave(upperTick!, event)
+  // updateTickFeeVarsAndSave(lowerTick!, event)
+  // updateTickFeeVarsAndSave(upperTick!, event)
 
   token0.save()
   token1.save()
@@ -525,10 +564,14 @@ export function handleSwap(event: SwapEvent): void {
 
   // update fee growth
   let poolContract = PoolABI.bind(event.address)
-  let feeGrowthGlobal0X128 = poolContract.feeGrowthGlobal0X128()
-  let feeGrowthGlobal1X128 = poolContract.feeGrowthGlobal1X128()
-  pool.feeGrowthGlobal0X128 = feeGrowthGlobal0X128 as BigInt
-  pool.feeGrowthGlobal1X128 = feeGrowthGlobal1X128 as BigInt
+  let feeGrowth0Result = poolContract.try_feeGrowthGlobal0X128();
+  if (!feeGrowth0Result.reverted) {
+    pool.feeGrowthGlobal0X128 = BigInt.fromI32(feeGrowth0Result as i32)
+  }
+  let feeGrowth1Result = poolContract.try_feeGrowthGlobal1X128();
+  if (!feeGrowth1Result.reverted) {
+    pool.feeGrowthGlobal1X128 = BigInt.fromI32(feeGrowth1Result as i32)
+  }
 
   // interval data
   let uniswapDayData = updateUniswapDayData(event)
@@ -596,7 +639,9 @@ export function handleSwap(event: SwapEvent): void {
   let newTick = pool.tick!
 
   loadTickUpdateFeeVarsAndSave(newTick.toI32(), event)
-  updateSingleTickVolume(event, newTick.toI32(), pool!, token0!, token1!, bundle!, amount0Abs, amount1Abs)
+
+  // Removing to make subgraphs syncing faster
+  // updateSingleTickVolume(event, newTick.toI32(), pool!, token0!, token1!, bundle!, amount0Abs, amount1Abs)
 }
 
 export function handleFlash(event: FlashEvent): void {
@@ -607,9 +652,13 @@ export function handleFlash(event: FlashEvent): void {
   // update fee growth
   let pool = Pool.load(event.address.toHexString())
   let poolContract = PoolABI.bind(event.address)
-  let feeGrowthGlobal0X128 = poolContract.feeGrowthGlobal0X128()
-  let feeGrowthGlobal1X128 = poolContract.feeGrowthGlobal1X128()
-  pool.feeGrowthGlobal0X128 = feeGrowthGlobal0X128 as BigInt
-  pool.feeGrowthGlobal1X128 = feeGrowthGlobal1X128 as BigInt
+  let feeGrowth0Result = poolContract.try_feeGrowthGlobal0X128();
+  if (!feeGrowth0Result.reverted) {
+    pool.feeGrowthGlobal0X128 = BigInt.fromI32(feeGrowth0Result as i32)
+  }
+  let feeGrowth1Result = poolContract.try_feeGrowthGlobal1X128();
+  if (!feeGrowth1Result.reverted) {
+    pool.feeGrowthGlobal1X128 = BigInt.fromI32(feeGrowth1Result as i32)
+  }
   pool.save()
 }
