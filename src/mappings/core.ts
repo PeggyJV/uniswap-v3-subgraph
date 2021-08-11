@@ -9,7 +9,7 @@ import {
   Mint as MintEvent,
   Swap as SwapEvent
 } from '../types/templates/Pool/Pool'
-import { convertTokenToDecimal, loadTransaction, safeDiv, bigDecimalExponated, exponentToBigDecimal, getSqrtRatioAtTick, safeDivBigInt } from '../utils'
+import { convertTokenToDecimal, loadTransaction, safeDiv } from '../utils'
 import { FACTORY_ADDRESS, ONE_BI, ZERO_BD, ONE_BD, ZERO_BI } from '../utils/constants'
 import { findEthPerToken, getEthPriceInUSD, getTrackedAmountUSD, sqrtPriceX96ToTokenPrices } from '../utils/pricing'
 import {
@@ -579,7 +579,9 @@ export function handleSwap(event: SwapEvent): void {
   let newTick = pool.tick!
 
   loadTickUpdateFeeVarsAndSave(newTick.toI32(), event)
-  updateSingleTickVolume(event, newTick.toI32(), pool!, token0!, token1!, bundle!, amount0Abs, amount1Abs)
+
+  // Removing to make subgraphs syncing faster
+  // updateSingleTickVolume(event, newTick.toI32(), pool!, token0!, token1!, bundle!, amount0Abs, amount1Abs)
 }
 
 export function handleFlash(event: FlashEvent): void {
