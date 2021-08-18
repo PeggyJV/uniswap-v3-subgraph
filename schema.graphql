@@ -798,3 +798,20 @@ type TokenHourData @entity {
   # close price USD
   close: BigDecimal!
 }
+
+type Cellar @entity {
+  # Cellar Ethereum Contract Address
+  id: ID!
+
+  # Target Pool Address
+  # pool: ID!
+
+  # Tokens
+  token0: Bytes! # address
+  token1: Bytes! # address
+
+  # TVL
+  totalValueLockedToken0: BigDecimal!
+  totalValueLockedToken1: BigDecimal!
+  totalValueLockedUSD: BigDecimal!
+}

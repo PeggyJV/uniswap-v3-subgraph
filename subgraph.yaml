@@ -69,6 +69,30 @@ dataSources:
   #         handler: handleCollect
   #       - event: Transfer(indexed address,indexed address,indexed uint256)
   #         handler: handleTransfer
+  - kind: ethereum/contract
+    name: Cellar
+    network: mainnet
+    source:
+      address: "0X6ea5992aB4A78D5720bD12A089D13c073d04B55d"
+      abi: CellarContract
+      startBlock: 13001299 # The block with the first rebalance
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - AddedLiquidity
+        - RemovedLiquidity
+      abis:
+        - name: CellarContract
+          file: ./abis/CellarContract.json
+      eventHandlers:
+        - event: AddedLiquidity(indexed address,indexed address,uint128,uint256,uint256)
+          handler: handleAddedLiquidity
+        - event: RemovedLiquidity(indexed address,indexed address,uint128,uint256,uint256)
+          handler: handleRemovedLiquidity
+      file: ./src/mappings/cellar.ts
+
 templates:
   - kind: ethereum/contract
     name: Pool
