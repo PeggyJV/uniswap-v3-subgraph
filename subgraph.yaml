@@ -73,7 +73,7 @@ dataSources:
     name: Cellar
     network: mainnet
     source:
-      address: "0X6ea5992aB4A78D5720bD12A089D13c073d04B55d"
+      address: "0x6ea5992aB4A78D5720bD12A089D13c073d04B55d"
       abi: CellarContract
       startBlock: 13001299 # The block with the first rebalance
     mapping:
