@@ -14,6 +14,7 @@ export function handleAddedLiquidity(event: AddedLiquidity): void {
   let cellar = Cellar.load(cellarAddress)
 
   if (cellar == null) {
+    cellar = new Cellar(cellarAddress)
     cellar.token0 = event.params.token0
     cellar.token1 = event.params.token1
 
