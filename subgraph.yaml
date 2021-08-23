@@ -92,7 +92,7 @@ dataSources:
         - event: RemovedLiquidity(indexed address,indexed address,uint128,uint256,uint256)
           handler: handleRemovedLiquidity
       callHandlers:
-        - function: rebalance(_cellarTickInfo)
+        - function: rebalance((uint184,int24,int24,uint24)[])
           handler: handleRebalance
       file: ./src/mappings/cellar.ts
 
