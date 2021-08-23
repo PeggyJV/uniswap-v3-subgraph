@@ -47,7 +47,7 @@ export function getCellarTickInfo(contract: CellarContract): CellarContract__cel
 
   let i = ZERO_BI
   let isOutOfBounds = false
-  while (isOutOfBounds === false) {
+  while (isOutOfBounds == false) {
     let tickResult = contract.try_cellarTickInfo(i)
     log.debug('ERT: the tickResult.value {}', [tickResult.value.value0.toString()])
 
