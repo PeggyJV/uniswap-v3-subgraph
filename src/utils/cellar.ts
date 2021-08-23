@@ -41,7 +41,6 @@ export function initCellar(contract: CellarContract, cellarAddress: string): Cel
 
   return cellar
 }
-
 export function getCellarTickInfo(contract: CellarContract): CellarContract__cellarTickInfoResult[] {
   log.debug('ERT: invoked getCellarTickInfo', [])
   let result = new Array<CellarContract__cellarTickInfoResult>()
@@ -51,7 +50,7 @@ export function getCellarTickInfo(contract: CellarContract): CellarContract__cel
   while (isOutOfBounds === false) {
     let tickResult = contract.try_cellarTickInfo(i)
     let value = tickResult.value
-    log.debug('ERT: tickResult.value {}', [value.toString()])
+    log.debug('ERT: tickResult.value {}', [value.value0.toString()])
 
     if (tickResult.value) {
       result.push(tickResult.value)
@@ -112,7 +111,7 @@ export function calculateCurrentTvl(
   bundle: Bundle,
   cellar: Cellar,
   nflpIds: BigInt[], // list of nflp tokenIds
-): Cellar {
+): Cellar | null {
   log.debug('ERT: invoked calculateCurrentTvl', [])
   let nflpCount = nflpIds.length
 
@@ -125,7 +124,8 @@ export function calculateCurrentTvl(
   for (let i = 0; i < nflpCount; i++) {
     let position = nflpManager.try_positions(nflpIds[i])
     if (position.reverted) {
-      return
+      log.error('Could not fetch positions from NFLP Manager', [])
+      return null
     }
 
     let pos = position.value
