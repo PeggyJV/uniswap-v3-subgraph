@@ -41,7 +41,7 @@ export function initCellar(contract: CellarContract, cellarAddress: string): Cel
 }
 
 export function getCellarTickInfo(contract: CellarContract): CellarContract__cellarTickInfoResult[] {
-  let result = new Array<CellarContract__cellarTickInfoResult>(0)
+  let result = new Array<CellarContract__cellarTickInfoResult>()
 
   let i = ZERO_BI
   let reverted = false
