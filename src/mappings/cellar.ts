@@ -1,4 +1,4 @@
-import { BigInt } from '@graphprotocol/graph-ts'
+import { BigInt, log } from '@graphprotocol/graph-ts'
 
 import { NonfungiblePositionManager } from '../types/NonfungiblePositionManager/NonfungiblePositionManager'
 import {
@@ -19,6 +19,7 @@ import {
 import { loadBundle } from '../utils/pricing'
 
 export function handleAddedLiquidity(event: AddedLiquidity): void {
+  log.debug('ERT: invoked handleAddedLiquidity', [])
   let cellarContract = CellarContract.bind(event.address)
   let nflpManager = NonfungiblePositionManager.bind(NONFUNGIBLE_POSITION_MANAGER)
   let bundle = loadBundle()
@@ -26,6 +27,7 @@ export function handleAddedLiquidity(event: AddedLiquidity): void {
   let cellarAddress = event.address.toHex()
   let cellar = Cellar.load(cellarAddress)
   if (cellar == null) {
+    log.debug('ERT: init Cellar', [])
     cellar = initCellar(cellarContract, cellarAddress)
   }
 
@@ -38,6 +40,7 @@ export function handleAddedLiquidity(event: AddedLiquidity): void {
 }
 
 export function handleRemovedLiquidity(event: RemovedLiquidity): void {
+  log.debug('ERT: invoked handleRemovedLiquidity', [])
   let cellarContract = CellarContract.bind(event.address)
   let nflpManager = NonfungiblePositionManager.bind(NONFUNGIBLE_POSITION_MANAGER)
   let bundle = loadBundle()
@@ -51,6 +54,7 @@ export function handleRemovedLiquidity(event: RemovedLiquidity): void {
 }
 
 export function handleRebalance(call: RebalanceCall): void {
+  log.debug('ERT: invoked handleRebalance', [])
   let cellarContract = CellarContract.bind(call.from)
   let nflpManager = NonfungiblePositionManager.bind(NONFUNGIBLE_POSITION_MANAGER)
   let bundle = loadBundle()

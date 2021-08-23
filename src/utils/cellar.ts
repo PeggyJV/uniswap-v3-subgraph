@@ -22,6 +22,7 @@ import {
 import { convertTokenToDecimal } from '../utils'
 
 export function loadCellar(cellarAddress: string): Cellar {
+  log.debug('ERT: invoked loadCellar', [])
   let cellar = Cellar.load(cellarAddress)
   if (cellar == null) throw new Error('Could not find Cellar:'.concat(cellarAddress))
 
@@ -29,6 +30,7 @@ export function loadCellar(cellarAddress: string): Cellar {
 }
 
 export function initCellar(contract: CellarContract, cellarAddress: string): Cellar {
+  log.debug('ERT: invoked initCellar', [])
   let cellar = new Cellar(cellarAddress)
   cellar.token0 = contract.token0()
   cellar.token1 = contract.token1()
@@ -41,6 +43,7 @@ export function initCellar(contract: CellarContract, cellarAddress: string): Cel
 }
 
 export function getCellarTickInfo(contract: CellarContract): CellarContract__cellarTickInfoResult[] {
+  log.debug('ERT: invoked getCellarTickInfo', [])
   let result = new Array<CellarContract__cellarTickInfoResult>()
 
   let i = ZERO_BI
@@ -59,6 +62,7 @@ export function getCellarTickInfo(contract: CellarContract): CellarContract__cel
 }
 
 export function saveNFLPs(cellarContract: CellarContract, cellar: Cellar): NFLP[] {
+  log.debug('ERT: invoked saveNFLPs', [])
   let ticks = getCellarTickInfo(cellarContract)
   let count = ticks.length
 
@@ -77,6 +81,7 @@ export function saveNFLPs(cellarContract: CellarContract, cellar: Cellar): NFLP[
 }
 
 export function upsertNFLPs(cellarContract: CellarContract, cellar: Cellar): NFLP[] {
+  log.debug('ERT: invoked upsertNFLPs', [])
   let ticks = getCellarTickInfo(cellarContract)
   let count = ticks.length
 
@@ -105,6 +110,7 @@ export function calculateCurrentTvl(
   cellar: Cellar,
   nflpIds: BigInt[], // list of nflp tokenIds
 ): Cellar {
+  log.debug('ERT: invoked calculateCurrentTvl', [])
   let nflpCount = nflpIds.length
 
   let token0 = Token.load(cellar.token0.toHexString())
