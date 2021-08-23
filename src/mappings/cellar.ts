@@ -8,7 +8,7 @@ import {
   RebalanceCall,
 } from "../types/Cellar/CellarContract"
 import { Cellar } from "../types/schema"
-import { NONFUNGIBLE_POSITION_MANAGER } from "../utils/Constants"
+import { NONFUNGIBLE_POSITION_MANAGER } from "../utils/constants"
 import {
   calculateCurrentTvl,
   initCellar,

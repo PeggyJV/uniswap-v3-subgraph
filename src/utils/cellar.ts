@@ -18,7 +18,7 @@ import {
   ONE_BI,
   ZERO_BD,
   ZERO_BI,
-} from './Constants'
+} from './constants'
 import { convertTokenToDecimal } from '../utils'
 
 export function loadCellar(cellarAddress: string): Cellar {
