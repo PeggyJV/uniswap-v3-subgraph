@@ -834,9 +834,3 @@ type NFLP @entity {
   # amount0: BigInt!
   # amount1: BigInt!
 }
-
-# Hack to serialize data into PG
-type List @entity {
-  id: ID!
-  list: String!
-}
