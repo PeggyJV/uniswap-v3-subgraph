@@ -47,14 +47,17 @@ export function getCellarTickInfo(contract: CellarContract): CellarContract__cel
   let result = new Array<CellarContract__cellarTickInfoResult>()
 
   let i = ZERO_BI
-  let reverted = false
-  while (reverted === false) {
+  let isOutOfBounds = false
+  while (isOutOfBounds === false) {
     let tickResult = contract.try_cellarTickInfo(i)
-    if (tickResult.reverted) {
-      reverted = true
-    } else {
+    let value = tickResult.value
+    log.debug('ERT: tickResult.value {}', [value.toString()])
+
+    if (tickResult.value) {
       result.push(tickResult.value)
       i.plus(ONE_BI)
+    } else {
+      isOutOfBounds = true
     }
   }
 
@@ -120,10 +123,14 @@ export function calculateCurrentTvl(
   let tvl1 = ZERO_BD
   let tvlUSD = ZERO_BD
   for (let i = 0; i < nflpCount; i++) {
-    let position = nflpManager.positions(nflpIds[i])
+    let position = nflpManager.try_positions(nflpIds[i])
+    if (position.reverted) {
+      return
+    }
 
-    let amount0 = convertTokenToDecimal(position.value10, token0.decimals)
-    let amount1 = convertTokenToDecimal(position.value11, token1.decimals)
+    let pos = position.value
+    let amount0 = convertTokenToDecimal(pos.value10, token0.decimals)
+    let amount1 = convertTokenToDecimal(pos.value11, token1.decimals)
     tvl0 = tvl0.plus(amount0)
     tvl1 = tvl1.plus(amount1)
 
