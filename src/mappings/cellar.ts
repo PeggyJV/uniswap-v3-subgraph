@@ -1,4 +1,4 @@
-import { BigInt, log } from '@graphprotocol/graph-ts'
+import { BigInt } from '@graphprotocol/graph-ts'
 
 import { NonfungiblePositionManager } from '../types/NonfungiblePositionManager/NonfungiblePositionManager'
 import {
@@ -7,58 +7,57 @@ import {
   RemovedLiquidity,
   RebalanceCall,
 } from "../types/Cellar/CellarContract"
-import { Bundle, Cellar, Token } from "../types/schema"
-import { convertTokenToDecimal } from "../utils"
-import {
-  NONFUNGIBLE_POSITION_MANAGER,
-  ZERO_BD
-} from "../utils/constants"
+import { Cellar } from "../types/schema"
+import { NONFUNGIBLE_POSITION_MANAGER } from "../utils/Constants"
 import {
   calculateCurrentTvl,
   initCellar,
+  loadCellar,
   saveNFLPs,
   upsertNFLPs,
 } from '../utils/cellar'
+import { loadBundle } from '../utils/pricing'
 
 export function handleAddedLiquidity(event: AddedLiquidity): void {
-  const cellarContract = CellarContract.bind(event.address)
-  const nflpManager = NonfungiblePositionManager.bind(NONFUNGIBLE_POSITION_MANAGER)
-  const bundle = Bundle.load('1')
+  let cellarContract = CellarContract.bind(event.address)
+  let nflpManager = NonfungiblePositionManager.bind(NONFUNGIBLE_POSITION_MANAGER)
+  let bundle = loadBundle()
 
-  const cellarAddress = event.address.toHex()
+  let cellarAddress = event.address.toHex()
   let cellar = Cellar.load(cellarAddress)
   if (cellar == null) {
     cellar = initCellar(cellarContract, cellarAddress)
   }
 
-  const nflps = upsertNFLPs(cellarContract, cellar)
-  const tokenIds = nflps.map(nflp => BigInt.fromString(nflp.id))
-  calculateCurrentTvl(nflpManager, bundle, cellar, tokenIds)
+  // odd that cellar type is Cellar | null here even though we init it above
+  let nflps = upsertNFLPs(cellarContract, cellar as Cellar)
+  let tokenIds = nflps.map<BigInt>(nflp => BigInt.fromString(nflp.id))
+  calculateCurrentTvl(nflpManager, bundle, cellar as Cellar, tokenIds)
 
   cellar.save()
 }
 
 export function handleRemovedLiquidity(event: RemovedLiquidity): void {
-  const cellarContract = CellarContract.bind(event.address)
-  const nflpManager = NonfungiblePositionManager.bind(NONFUNGIBLE_POSITION_MANAGER)
-  let bundle = Bundle.load('1')
+  let cellarContract = CellarContract.bind(event.address)
+  let nflpManager = NonfungiblePositionManager.bind(NONFUNGIBLE_POSITION_MANAGER)
+  let bundle = loadBundle()
 
-  const cellar = Cellar.load(event.address.toHex())
-  const nflps = upsertNFLPs(cellarContract, cellar)
-  const tokenIds = nflps.map(nflp => BigInt.fromString(nflp.id))
+  let cellar = loadCellar(event.address.toHex())
+  let nflps = upsertNFLPs(cellarContract, cellar)
+  let tokenIds = nflps.map<BigInt>(nflp => BigInt.fromString(nflp.id))
   calculateCurrentTvl(nflpManager, bundle, cellar, tokenIds)
 
   cellar.save()
 }
 
 export function handleRebalance(call: RebalanceCall): void {
-  const cellarContract = CellarContract.bind(call.from)
-  const nflpManager = NonfungiblePositionManager.bind(NONFUNGIBLE_POSITION_MANAGER)
-  let bundle = Bundle.load('1')
+  let cellarContract = CellarContract.bind(call.from)
+  let nflpManager = NonfungiblePositionManager.bind(NONFUNGIBLE_POSITION_MANAGER)
+  let bundle = loadBundle()
 
-  const cellar = Cellar.load(call.from.toHexString())
-  const nflps = saveNFLPs(cellarContract, cellar)
-  const tokenIds = nflps.map(nflp => BigInt.fromString(nflp.id))
+  let cellar = loadCellar(call.from.toHexString())
+  let nflps = saveNFLPs(cellarContract, cellar)
+  let tokenIds = nflps.map<BigInt>(nflp => BigInt.fromString(nflp.id))
   calculateCurrentTvl(nflpManager, bundle, cellar, tokenIds)
 
   cellar.save()

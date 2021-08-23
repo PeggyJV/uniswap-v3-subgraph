@@ -1,17 +1,35 @@
-import { Address, BigInt, ethereum, log } from '@graphprotocol/graph-ts'
+import {
+  BigInt,
+  log,
+} from '@graphprotocol/graph-ts'
 
-import { CellarContract, CellarContract__cellarTickInfoResult } from '../types/Cellar/CellarContract'
+import {
+  CellarContract,
+  CellarContract__cellarTickInfoResult,
+} from '../types/Cellar/CellarContract'
 import { NonfungiblePositionManager } from '../types/NonfungiblePositionManager/NonfungiblePositionManager'
-import { Bundle, Pool, Position, PositionSnapshot, Token, List, NFLP, Cellar } from '../types/schema'
+import {
+  Bundle,
+  Token,
+  NFLP,
+  Cellar,
+} from '../types/schema'
 import {
   ONE_BI,
   ZERO_BD,
   ZERO_BI,
-} from './constants'
+} from './Constants'
 import { convertTokenToDecimal } from '../utils'
 
+export function loadCellar(cellarAddress: string): Cellar {
+  let cellar = Cellar.load(cellarAddress)
+  if (cellar == null) throw new Error('Could not find Cellar:'.concat(cellarAddress))
+
+  return cellar as Cellar
+}
+
 export function initCellar(contract: CellarContract, cellarAddress: string): Cellar {
-  const cellar = new Cellar(cellarAddress)
+  let cellar = new Cellar(cellarAddress)
   cellar.token0 = contract.token0()
   cellar.token1 = contract.token1()
 
@@ -23,33 +41,31 @@ export function initCellar(contract: CellarContract, cellarAddress: string): Cel
 }
 
 export function getCellarTickInfo(contract: CellarContract): CellarContract__cellarTickInfoResult[] {
-  const result = []
+  let result = new Array<CellarContract__cellarTickInfoResult>(0)
 
   let i = ZERO_BI
-  let tickInfo = {}
-  while (tickInfo != null) {
-    try {
-      tickInfo = contract.cellarTickInfo(i)
-    } catch (e) {
-      log.info('getCellarTickInfo: NFLP length was {}', [i.minus(ONE_BI).toString()])
-      tickInfo = null
+  let reverted = false
+  while (reverted === false) {
+    let tickResult = contract.try_cellarTickInfo(i)
+    if (tickResult.reverted) {
+      reverted = true
+    } else {
+      result.push(tickResult.value)
+      i.plus(ONE_BI)
     }
-
-    result.push(tickInfo)
-    i.plus(ONE_BI)
   }
 
   return result
 }
 
 export function saveNFLPs(cellarContract: CellarContract, cellar: Cellar): NFLP[] {
-  const ticks = getCellarTickInfo(cellarContract)
-  const count = ticks.length
+  let ticks = getCellarTickInfo(cellarContract)
+  let count = ticks.length
 
-  const nflps = []
+  let nflps = new Array<NFLP>(count)
   for (let i = 0; i < count; i++) {
-    const tick = ticks[0]
-    const nflp = new NFLP(tick.value0.toString())
+    let tick = ticks[0]
+    let nflp = new NFLP(tick.value0.toString())
     nflp.tickUpper = BigInt.fromI32(tick.value1)
     nflp.tickLower = BigInt.fromI32(tick.value2)
     nflp.save()
@@ -61,13 +77,13 @@ export function saveNFLPs(cellarContract: CellarContract, cellar: Cellar): NFLP[
 }
 
 export function upsertNFLPs(cellarContract: CellarContract, cellar: Cellar): NFLP[] {
-  const ticks = getCellarTickInfo(cellarContract)
-  const count = ticks.length
+  let ticks = getCellarTickInfo(cellarContract)
+  let count = ticks.length
 
-  const nflps = []
+  let nflps = new Array<NFLP>(count)
   for (let i = 0; i < count; i++) {
-    const tick = ticks[0]
-    const tokenId = tick.value0.toString()
+    let tick = ticks[0]
+    let tokenId = tick.value0.toString()
 
     let nflp = NFLP.load(tokenId)
     if (nflp == null) {
@@ -77,7 +93,7 @@ export function upsertNFLPs(cellarContract: CellarContract, cellar: Cellar): NFL
       nflp.save()
     }
 
-    nflps.push(nflp)
+    nflps.push(nflp as NFLP)
   }
 
   return nflps
@@ -89,19 +105,19 @@ export function calculateCurrentTvl(
   cellar: Cellar,
   nflpIds: BigInt[], // list of nflp tokenIds
 ): Cellar {
-  const nflpCount = nflpIds.length
+  let nflpCount = nflpIds.length
 
-  const token0 = Token.load(cellar.token0.toHexString())
-  const token1 = Token.load(cellar.token1.toHexString())
+  let token0 = Token.load(cellar.token0.toHexString())
+  let token1 = Token.load(cellar.token1.toHexString())
 
   let tvl0 = ZERO_BD
   let tvl1 = ZERO_BD
   let tvlUSD = ZERO_BD
   for (let i = 0; i < nflpCount; i++) {
-    const position = nflpManager.positions(nflpIds[i])
+    let position = nflpManager.positions(nflpIds[i])
 
-    const amount0 = convertTokenToDecimal(position.value10, token0.decimals)
-    const amount1 = convertTokenToDecimal(position.value11, token1.decimals)
+    let amount0 = convertTokenToDecimal(position.value10, token0.decimals)
+    let amount1 = convertTokenToDecimal(position.value11, token1.decimals)
     tvl0 = tvl0.plus(amount0)
     tvl1 = tvl1.plus(amount1)
 
