@@ -4,8 +4,8 @@ repository: https://github.com/Uniswap/uniswap-v3-subgraph
 schema:
   file: ./schema.graphql
 graft:
-  base: QmVh7M9jQFiUjo8BmXnVLyXTQc3i5Vnc3pMa1kvZjy5w8M
-  block: 13001302
+  base: QmPh9YVHVj7qYU1PGtNzixFSweAstkB2RYHRmu2ZXihjUt
+  block: 12891709
 dataSources:
   - kind: ethereum/contract
     name: Factory
@@ -61,14 +61,14 @@ dataSources:
         - name: ERC20
           file: ./abis/ERC20.json
       eventHandlers:
-        - event: IncreaseLiquidity(indexed uint256,uint128,uint256,uint256)
-          handler: handleIncreaseLiquidity
-        - event: DecreaseLiquidity(indexed uint256,uint128,uint256,uint256)
-          handler: handleDecreaseLiquidity
-        - event: Collect(indexed uint256,address,uint256,uint256)
-          handler: handleCollect
-        - event: Transfer(indexed address,indexed address,indexed uint256)
-          handler: handleTransfer
+        # - event: IncreaseLiquidity(indexed uint256,uint128,uint256,uint256)
+        #   handler: handleIncreaseLiquidity
+        # - event: DecreaseLiquidity(indexed uint256,uint128,uint256,uint256)
+        #   handler: handleDecreaseLiquidity
+        # - event: Collect(indexed uint256,address,uint256,uint256)
+        #   handler: handleCollect
+        # - event: Transfer(indexed address,indexed address,indexed uint256)
+        #   handler: handleTransfer
   - kind: ethereum/contract
     name: Cellar
     network: mainnet
