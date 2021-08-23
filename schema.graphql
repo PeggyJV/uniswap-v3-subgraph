@@ -806,6 +806,9 @@ type Cellar @entity {
   # Target Pool Address
   # pool: ID!
 
+  # NFLPs
+  nflps: [NFLP!]! @derivedFrom(field: "cellar")
+
   # Tokens
   token0: Bytes! # address
   token1: Bytes! # address
@@ -814,4 +817,26 @@ type Cellar @entity {
   totalValueLockedToken0: BigDecimal!
   totalValueLockedToken1: BigDecimal!
   totalValueLockedUSD: BigDecimal!
+}
+
+type NFLP @entity {
+  # tokenId
+  id: ID!
+  
+  # Cellar reference
+  cellar: Cellar!
+
+  # Tick ranges
+  tickUpper: BigInt!
+  tickLower: BigInt!
+
+  # Amount deposited
+  # amount0: BigInt!
+  # amount1: BigInt!
+}
+
+# Hack to serialize data into PG
+type List @entity {
+  id: ID!
+  list: String!
 }
