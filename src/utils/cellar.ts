@@ -89,7 +89,7 @@ export function upsertNFLPs(cellarContract: CellarContract, cellar: Cellar): NFL
   let ticks = getCellarTickInfo(cellarContract)
   let count = ticks.length
 
-  let nflps = new Array<NFLP>(count)
+  let nflps = new Array<NFLP>()
   for (let i = 0; i < count; i++) {
     let tick = ticks[0]
     let tokenId = tick.value0.toString()
