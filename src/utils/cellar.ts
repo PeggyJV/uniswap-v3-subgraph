@@ -210,8 +210,8 @@ function init1 (): Token {
   return t
 }
 
-let Q192 = 2 ** 192
-let denom = BigDecimal.fromString(Q192.toString())
+let Q64 = 2 ** 64
+let denom = BigDecimal.fromString(Q64.toString())
 export function calculateCurrentTvl(
   nflpManager: NonfungiblePositionManager,
   bundle: Bundle,
