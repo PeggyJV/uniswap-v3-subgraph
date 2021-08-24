@@ -11,9 +11,10 @@ import {
 import { NonfungiblePositionManager } from '../types/NonfungiblePositionManager/NonfungiblePositionManager'
 import {
   Bundle,
-  Token,
-  NFLP,
   Cellar,
+  NFLP,
+  Pool,
+  Token,
 } from '../types/schema'
 import {
   ONE_BD,
@@ -38,6 +39,10 @@ export function initCellar(contract: CellarContract, cellarAddress: string): Cel
   let cellar = new Cellar(cellarAddress)
   cellar.token0 = contract.token0().toHexString()
   cellar.token1 = contract.token1().toHexString()
+
+  // TODO: derive this from token and fee
+  cellar.pool = '0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8'
+  cellar.feeTier = BigInt.fromI32(3000)
 
   cellar.totalValueLockedToken0 = ZERO_BD
   cellar.totalValueLockedToken1 = ZERO_BD
@@ -145,8 +150,42 @@ function init0 (): Token {
   return t
 }
 
+function initPool(cellar: Cellar): Pool {
+  let p = new Pool(cellar.pool)
+
+  p.createdAtTimestamp = BigInt.fromString('1629792611096')
+  p.createdAtBlockNumber = BigInt.fromString('1629792611096')
+  p.token0 = cellar.token0
+  p.token1 = cellar.token1
+  p.feeTier = cellar.feeTier
+  p.liquidity = ZERO_BI
+  p.sqrtPrice = BigInt.fromString('1369233786243271037337267759247908')
+  p.feeGrowthGlobal0X128 = ZERO_BI
+  p.feeGrowthGlobal1X128 = ZERO_BI
+  p.token0Price = ZERO_BD
+  p.token1Price = ZERO_BD
+  p.tick = ZERO_BI
+  p.observationIndex = ZERO_BI!
+  p.volumeToken0 = ZERO_BD
+  p.volumeToken1 = ZERO_BD
+  p.volumeUSD = ZERO_BD
+  p.untrackedVolumeUSD = ZERO_BD
+  p.feesUSD = ZERO_BD
+  p.txCount = ZERO_BI!
+  p.collectedFeesToken0 = ZERO_BD
+  p.collectedFeesToken1 = ZERO_BD
+  p.collectedFeesUSD = ZERO_BD
+  p.totalValueLockedToken0 = ZERO_BD
+  p.totalValueLockedToken1 = ZERO_BD
+  p.totalValueLockedETH = ZERO_BD
+  p.totalValueLockedUSD = ZERO_BD
+  p.totalValueLockedUSDUntracked = ZERO_BD
+
+  return p
+}
+
 function init1 (): Token {
-  let t = new Token('0xdac17f958d2ee523a2206206994597c13d831ec7');
+  let t = new Token('0xdac17f958d2ee523a2206206994597c13d831ec7')
 
   t.symbol = 'USDT'
   t.name = 'Tether USD'
@@ -179,6 +218,7 @@ export function calculateCurrentTvl(
 
   let token0 = Token.load(cellar.token0)
   let token1 = Token.load(cellar.token1)
+  let pool = Pool.load(cellar.pool)
 
   if (token0 == null) {
     token0 = init0()
@@ -186,6 +226,10 @@ export function calculateCurrentTvl(
 
   if (token1 == null) {
     token1 = init1()
+  }
+
+  if (pool == null) {
+    pool = initPool(cellar)
   }
 
   let tvl0 = ZERO_BD
@@ -204,6 +248,11 @@ export function calculateCurrentTvl(
       pos.value10.toString(),
       pos.value11.toString()
     ])
+
+    let liquidity = pos.value7
+    let a0 = liquidity.divDecimal(pool.sqrtPrice.toBigDecimal())
+    let a1 = liquidity.times(pool.sqrtPrice)
+    log.info('ERT: derived amounts: t0: {}, t1: {}', [a0.toString(), a1.toString()])
 
     let amount0 = convertTokenToDecimal(pos.value10, token0.decimals)
     let amount1 = convertTokenToDecimal(pos.value11, token1.decimals)

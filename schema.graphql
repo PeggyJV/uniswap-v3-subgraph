@@ -804,7 +804,8 @@ type Cellar @entity {
   id: ID!
 
   # Target Pool Address
-  # pool: ID!
+  pool: Pool!
+  feeTier: BigInt!
 
   # NFLPs
   nflps: [NFLP!]! @derivedFrom(field: "cellar")
