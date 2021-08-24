@@ -166,6 +166,7 @@ export function handleDecreaseLiquidity(event: DecreaseLiquidity): void {
 }
 
 export function handleCollect(event: Collect): void {
+  log.info('handleCollect: {}', [event.params.tokenId.toString()])
   // let position = getPosition(event, event.params.tokenId)
 
   // // position was not able to be fetched
@@ -202,14 +203,15 @@ export function handleCollect(event: Collect): void {
   }
   let cellar = _cellar as Cellar
 
-  let token0 = Token.load(nflp.token0)
-  let token1 = Token.load(nflp.token1)
+  // TODO: dont save tokens on NFLP, fetch from cellar
+  let token0 = Token.load(cellar.token0)
+  let token1 = Token.load(cellar.token1)
   let bundle = Bundle.load('1')
 
   let amount0 = convertTokenToDecimal(event.params.amount0, token0.decimals)
   let amount1 = convertTokenToDecimal(event.params.amount1, token1.decimals)
 
-  log.info('ERT: Collect Event a0: {}, a1: {}', [event.params.amount0.toString(), event.params.amount1.toString()])
+  log.info('ERT: Collect Event tokenId: {}, a0: {}, a1: {}', [event.params.tokenId.toString(), event.params.amount0.toString(), event.params.amount1.toString()])
 
   // fees collected in token amounts
   cellar.feesCollectedToken0 = cellar.feesCollectedToken0.plus(amount0)
