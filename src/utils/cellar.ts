@@ -258,7 +258,7 @@ export function calculateCurrentTvl(
     let liquidity = pos.value7
     let a0 = liquidity.div(pool.sqrtPrice).divDecimal(denom)
     let a1 = liquidity.times(pool.sqrtPrice).divDecimal(denom)
-    log.info('ERT: derived amounts: t0: {}, t1: {}', [a0.toString(), a1.toString()])
+    log.info('ERT: derived amounts: liq: {}, t0: {}, t1: {}', [liquidity.toString(), a0.toString(), a1.toString()])
 
     let amount0 = convertTokenToDecimal(pos.value10, token0.decimals)
     let amount1 = convertTokenToDecimal(pos.value11, token1.decimals)
