@@ -214,9 +214,10 @@ export function handleCollect(event: Collect): void {
   cellar.feesCollectedToken1 = cellar.feesCollectedToken1.plus(amount1)
 
   // fees collected in USD
-  cellar.feesCollectedTokenUSD = amount0.times(token0.derivedETH.times(bundle.ethPriceUSD))
-    .plus(amount1.times(token1.derivedETH.times(bundle.ethPriceUSD)))
-    .plus(cellar.feesCollectedTokenUSD)
+  let val0 = amount0.times(token0.derivedETH).times(bundle.ethPriceUSD)
+  let val1 = amount1.times(token1.derivedETH).times(bundle.ethPriceUSD)
+  log.info('ERT: Fees Collected: t0: {}, t1: {}', [val0.toString(), val1.toString()])
+  cellar.feesCollectedTokenUSD = cellar.feesCollectedTokenUSD.plus(val0).plus(val1)
 
   cellar.save()
 }
