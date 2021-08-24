@@ -168,11 +168,11 @@ export function calculateCurrentTvl(
   let token1 = Token.load(cellar.token1.toHexString())
 
   if (token0 == null) {
-    init0()
+    token0 = init0()
   }
 
   if (token1 == null) {
-    init1()
+    token1 = init1()
   }
 
   let tvl0 = ZERO_BD
