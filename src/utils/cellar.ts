@@ -15,6 +15,7 @@ import {
   Cellar,
 } from '../types/schema'
 import {
+  ONE_BD,
   ONE_BI,
   ZERO_BD,
   ZERO_BI,
@@ -105,6 +106,52 @@ export function upsertNFLPs(cellarContract: CellarContract, cellar: Cellar): NFL
   return nflps
 }
 
+function init0 (): Token {
+  let t = new Token('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2');
+
+  t.symbol = 'WETH'
+  t.name = 'Wrapped Ether'
+  t.decimals = BigInt.fromI32(18)
+  t.totalSupply = BigInt.fromI32(19376)
+  t.volume = ZERO_BD
+  t.volumeUSD = ZERO_BD
+  t.untrackedVolumeUSD = ZERO_BD
+  t.feesUSD = ZERO_BD
+  t.txCount = ZERO_BI
+  t.poolCount = ZERO_BI
+  t.totalValueLocked = ZERO_BD
+  t.totalValueLockedUSD = ZERO_BD
+  t.totalValueLockedUSDUntracked = ZERO_BD
+  t.derivedETH = ONE_BD
+  t.whitelistPools = []
+
+  t.save()
+  return t
+}
+
+function init1 (): Token {
+  let t = new Token('0xdac17f958d2ee523a2206206994597c13d831ec7');
+
+  t.symbol = 'USDT'
+  t.name = 'Tether USD'
+  t.decimals = BigInt.fromI32(6)
+  t.totalSupply = BigInt.fromI32(17768)
+  t.volume = ZERO_BD
+  t.volumeUSD = ZERO_BD
+  t.untrackedVolumeUSD = ZERO_BD
+  t.feesUSD = ZERO_BD
+  t.txCount = ZERO_BI
+  t.poolCount = ZERO_BI
+  t.totalValueLocked = ZERO_BD
+  t.totalValueLockedUSD = ZERO_BD
+  t.totalValueLockedUSDUntracked = ZERO_BD
+  t.derivedETH = ONE_BD
+  t.whitelistPools = []
+
+  t.save()
+  return t
+}
+
 export function calculateCurrentTvl(
   nflpManager: NonfungiblePositionManager,
   bundle: Bundle,
@@ -116,6 +163,14 @@ export function calculateCurrentTvl(
 
   let token0 = Token.load(cellar.token0.toHexString())
   let token1 = Token.load(cellar.token1.toHexString())
+
+  if (token0 == null) {
+    init0()
+  }
+
+  if (token1 == null) {
+    init1()
+  }
 
   let tvl0 = ZERO_BD
   let tvl1 = ZERO_BD
