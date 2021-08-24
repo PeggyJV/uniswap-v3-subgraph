@@ -817,6 +817,11 @@ type Cellar @entity {
   totalValueLockedToken0: BigDecimal!
   totalValueLockedToken1: BigDecimal!
   totalValueLockedUSD: BigDecimal!
+
+  # Lifetime fees collected
+  feesCollectedToken0: BigDecimal!
+  feesCollectedToken1: BigDecimal!
+  feesCollectedTokenUSD: BigDecimal!
 }
 
 type NFLP @entity {
@@ -825,6 +830,10 @@ type NFLP @entity {
   
   # Cellar reference
   cellar: Cellar!
+
+  # Tokens
+  token0: Token! # address
+  token1: Token! # address
 
   # Tick ranges
   tickUpper: BigInt!

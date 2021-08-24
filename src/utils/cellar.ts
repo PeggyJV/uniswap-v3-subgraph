@@ -42,6 +42,9 @@ export function initCellar(contract: CellarContract, cellarAddress: string): Cel
   cellar.totalValueLockedToken0 = ZERO_BD
   cellar.totalValueLockedToken1 = ZERO_BD
   cellar.totalValueLockedUSD = ZERO_BD
+  cellar.feesCollectedToken0 = ZERO_BD
+  cellar.feesCollectedToken1 = ZERO_BD
+  cellar.feesCollectedTokenUSD = ZERO_BD
 
   return cellar
 }
@@ -80,6 +83,8 @@ export function saveNFLPs(cellarContract: CellarContract, cellar: Cellar): NFLP[
     let nflp = new NFLP(tick.value0.toString())
     nflp.tickUpper = BigInt.fromI32(tick.value1)
     nflp.tickLower = BigInt.fromI32(tick.value2)
+    nflp.token0 = cellar.token0
+    nflp.token1 = cellar.token1
     nflp.cellar = cellar.id
     nflp.save()
 
@@ -105,6 +110,8 @@ export function upsertNFLPs(cellarContract: CellarContract, cellar: Cellar): NFL
       nflp = new NFLP(tick.value0.toString())
       nflp.tickUpper = BigInt.fromI32(tick.value1)
       nflp.tickLower = BigInt.fromI32(tick.value2)
+      nflp.token0 = cellar.token0
+      nflp.token1 = cellar.token1
       nflp.cellar = cellar.id
       nflp.save()
     }
@@ -204,9 +211,9 @@ export function calculateCurrentTvl(
     tvl0 = tvl0.plus(amount0)
     tvl1 = tvl1.plus(amount1)
 
-    tvlUSD = amount0.times(token0.derivedETH.times(bundle.ethPriceUSD)).plus(
-      amount1.times(token0.derivedETH.times(bundle.ethPriceUSD)).plus(tvlUSD)
-    )
+    tvlUSD = amount0.times(token0.derivedETH.times(bundle.ethPriceUSD))
+      .plus(amount1.times(token0.derivedETH.times(bundle.ethPriceUSD)))
+      .plus(tvlUSD)
 
     log.info('ERT: new tvlUSD: {}', [tvlUSD.toString()])
   }
