@@ -215,7 +215,7 @@ export function handleCollect(event: Collect): void {
 
   // fees collected in USD
   cellar.feesCollectedTokenUSD = amount0.times(token0.derivedETH.times(bundle.ethPriceUSD))
-    .plus(amount1.times(token0.derivedETH.times(bundle.ethPriceUSD)))
+    .plus(amount1.times(token1.derivedETH.times(bundle.ethPriceUSD)))
     .plus(cellar.feesCollectedTokenUSD)
 
   cellar.save()

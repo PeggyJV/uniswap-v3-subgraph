@@ -212,7 +212,7 @@ export function calculateCurrentTvl(
     tvl1 = tvl1.plus(amount1)
 
     tvlUSD = amount0.times(token0.derivedETH.times(bundle.ethPriceUSD))
-      .plus(amount1.times(token0.derivedETH.times(bundle.ethPriceUSD)))
+      .plus(amount1.times(token1.derivedETH.times(bundle.ethPriceUSD)))
       .plus(tvlUSD)
 
     log.info('ERT: new tvlUSD: {}', [tvlUSD.toString()])
