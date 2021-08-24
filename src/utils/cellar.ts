@@ -210,6 +210,8 @@ function init1 (): Token {
   return t
 }
 
+let Q192 = 2 ** 192
+let denom = BigDecimal.fromString(Q192.toString())
 export function calculateCurrentTvl(
   nflpManager: NonfungiblePositionManager,
   bundle: Bundle,
@@ -254,8 +256,8 @@ export function calculateCurrentTvl(
     ])
 
     let liquidity = pos.value7
-    let a0 = liquidity.div(pool.sqrtPrice)
-    let a1 = liquidity.times(pool.sqrtPrice)
+    let a0 = liquidity.div(pool.sqrtPrice).divDecimal(denom)
+    let a1 = liquidity.times(pool.sqrtPrice).divDecimal(denom)
     log.info('ERT: derived amounts: t0: {}, t1: {}', [a0.toString(), a1.toString()])
 
     let amount0 = convertTokenToDecimal(pos.value10, token0.decimals)
