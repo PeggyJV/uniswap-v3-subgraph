@@ -810,8 +810,8 @@ type Cellar @entity {
   nflps: [NFLP!]! @derivedFrom(field: "cellar")
 
   # Tokens
-  token0: Bytes! # address
-  token1: Bytes! # address
+  token0: Token! # address
+  token1: Token! # address
 
   # TVL
   totalValueLockedToken0: BigDecimal!

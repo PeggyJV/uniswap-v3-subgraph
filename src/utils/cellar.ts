@@ -1,4 +1,5 @@
 import {
+  BigDecimal,
   BigInt,
   log,
 } from '@graphprotocol/graph-ts'
@@ -33,8 +34,8 @@ export function loadCellar(cellarAddress: string): Cellar {
 export function initCellar(contract: CellarContract, cellarAddress: string): Cellar {
   log.info('ERT: invoked initCellar', [])
   let cellar = new Cellar(cellarAddress)
-  cellar.token0 = contract.token0()
-  cellar.token1 = contract.token1()
+  cellar.token0 = contract.token0().toHexString()
+  cellar.token1 = contract.token1().toHexString()
 
   cellar.totalValueLockedToken0 = ZERO_BD
   cellar.totalValueLockedToken1 = ZERO_BD
@@ -151,7 +152,7 @@ function init1 (): Token {
   t.totalValueLocked = ZERO_BD
   t.totalValueLockedUSD = ZERO_BD
   t.totalValueLockedUSDUntracked = ZERO_BD
-  t.derivedETH = ONE_BD
+  t.derivedETH = BigDecimal.fromString('0.0003023957971778731707111332969285618')
   t.whitelistPools = []
 
   t.save()
@@ -167,8 +168,8 @@ export function calculateCurrentTvl(
   log.info('ERT: invoked calculateCurrentTvl', [])
   let nflpCount = nflpIds.length
 
-  let token0 = Token.load(cellar.token0.toHexString())
-  let token1 = Token.load(cellar.token1.toHexString())
+  let token0 = Token.load(cellar.token0)
+  let token1 = Token.load(cellar.token1)
 
   if (token0 == null) {
     token0 = init0()
@@ -189,14 +190,23 @@ export function calculateCurrentTvl(
     }
 
     let pos = position.value
+    log.info('ERT: Position id: {}, token0: {}, token1: {}', [
+      nflpIds.toString(),
+      pos.value10.toString(),
+      pos.value11.toString()
+    ])
+
     let amount0 = convertTokenToDecimal(pos.value10, token0.decimals)
     let amount1 = convertTokenToDecimal(pos.value11, token1.decimals)
+    log.info('ERT: Converted t0: {}, t1: {}', [amount0.toString(), amount1.toString()])
     tvl0 = tvl0.plus(amount0)
     tvl1 = tvl1.plus(amount1)
 
     tvlUSD = amount0.times(token0.derivedETH.times(bundle.ethPriceUSD)).plus(
-      amount1.times(token0.derivedETH.times(bundle.ethPriceUSD))
+      amount1.times(token0.derivedETH.times(bundle.ethPriceUSD)).plus(tvlUSD)
     )
+
+    log.info('ERT: new tvlUSD: {}', [tvlUSD.toString()])
   }
 
   cellar.totalValueLockedToken0 = tvl0
