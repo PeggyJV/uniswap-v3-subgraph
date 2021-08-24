@@ -69,7 +69,7 @@ export function saveNFLPs(cellarContract: CellarContract, cellar: Cellar): NFLP[
   let ticks = getCellarTickInfo(cellarContract)
   let count = ticks.length
 
-  let nflps = new Array<NFLP>(count)
+  let nflps = new Array<NFLP>()
   for (let i = 0; i < count; i++) {
     let tick = ticks[0]
     let nflp = new NFLP(tick.value0.toString())
@@ -96,6 +96,7 @@ export function upsertNFLPs(cellarContract: CellarContract, cellar: Cellar): NFL
 
     let nflp = NFLP.load(tokenId)
     if (nflp == null) {
+      log.info('ERT: NFLP null initializing {}', [tokenId])
       nflp = new NFLP(tick.value0.toString())
       nflp.tickUpper = BigInt.fromI32(tick.value1)
       nflp.tickLower = BigInt.fromI32(tick.value2)
