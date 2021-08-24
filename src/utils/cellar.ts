@@ -52,11 +52,11 @@ export function getCellarTickInfo(contract: CellarContract): CellarContract__cel
     let tickResult = contract.try_cellarTickInfo(i)
     log.info('ERT: the tickResult.value {}', [tickResult.value.value0.toString()])
 
-    if (tickResult.value) {
+    if (tickResult.reverted) {
+      isOutOfBounds = true
+    } else {
       result.push(tickResult.value)
       i = i.plus(ONE_BI)
-    } else {
-      isOutOfBounds = true
     }
   }
 
