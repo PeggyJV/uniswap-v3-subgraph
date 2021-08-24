@@ -54,7 +54,7 @@ export function getCellarTickInfo(contract: CellarContract): CellarContract__cel
 
     if (tickResult.value) {
       result.push(tickResult.value)
-      i.plus(ONE_BI)
+      i = i.plus(ONE_BI)
     } else {
       isOutOfBounds = true
     }
