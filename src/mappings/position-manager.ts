@@ -209,6 +209,8 @@ export function handleCollect(event: Collect): void {
   let amount0 = convertTokenToDecimal(event.params.amount0, token0.decimals)
   let amount1 = convertTokenToDecimal(event.params.amount1, token1.decimals)
 
+  log.info('ERT: Collect Event a0: {}, a1: {}', [event.params.amount0.toString(), event.params.amount1.toString()])
+
   // fees collected in token amounts
   cellar.feesCollectedToken0 = cellar.feesCollectedToken0.plus(amount0)
   cellar.feesCollectedToken1 = cellar.feesCollectedToken1.plus(amount1)
