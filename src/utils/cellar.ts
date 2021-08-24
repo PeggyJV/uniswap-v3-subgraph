@@ -151,6 +151,7 @@ function init0 (): Token {
 }
 
 function initPool(cellar: Cellar): Pool {
+  log.info('ERT: initializing pool', [])
   let p = new Pool(cellar.pool)
 
   p.createdAtTimestamp = BigInt.fromString('1629792611096')
@@ -165,7 +166,7 @@ function initPool(cellar: Cellar): Pool {
   p.token0Price = ZERO_BD
   p.token1Price = ZERO_BD
   p.tick = ZERO_BI
-  p.observationIndex = ZERO_BI!
+  p.observationIndex = ZERO_BI
   p.volumeToken0 = ZERO_BD
   p.volumeToken1 = ZERO_BD
   p.volumeUSD = ZERO_BD
@@ -180,6 +181,7 @@ function initPool(cellar: Cellar): Pool {
   p.totalValueLockedETH = ZERO_BD
   p.totalValueLockedUSD = ZERO_BD
   p.totalValueLockedUSDUntracked = ZERO_BD
+  p.liquidityProviderCount = ZERO_BI
 
   p.save()
   return p
@@ -232,6 +234,7 @@ export function calculateCurrentTvl(
   if (pool == null) {
     pool = initPool(cellar)
   }
+  log.info('ERT: tokens and pool loaded', [])
 
   let tvl0 = ZERO_BD
   let tvl1 = ZERO_BD
