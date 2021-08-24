@@ -181,6 +181,7 @@ function initPool(cellar: Cellar): Pool {
   p.totalValueLockedUSD = ZERO_BD
   p.totalValueLockedUSDUntracked = ZERO_BD
 
+  p.save()
   return p
 }
 
