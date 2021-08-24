@@ -251,7 +251,7 @@ export function calculateCurrentTvl(
     ])
 
     let liquidity = pos.value7
-    let a0 = liquidity.divDecimal(pool.sqrtPrice.toBigDecimal())
+    let a0 = liquidity.div(pool.sqrtPrice)
     let a1 = liquidity.times(pool.sqrtPrice)
     log.info('ERT: derived amounts: t0: {}, t1: {}', [a0.toString(), a1.toString()])
 
