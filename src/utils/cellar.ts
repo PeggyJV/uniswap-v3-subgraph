@@ -61,7 +61,7 @@ export function getCellarTickInfo(contract: CellarContract): CellarContract__cel
     }
   }
 
-  log.info('ERT: found {} ticks', [result.length.toString()])
+  log.info('ERT: found {} ticks', [result.length.toString(10)])
   return result
 }
 
