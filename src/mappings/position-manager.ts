@@ -207,11 +207,11 @@ export function handleCollect(event: Collect): void {
   let bundle = Bundle.load('1')
 
   let amount0 = convertTokenToDecimal(event.params.amount0, token0.decimals)
-  let amount1 = convertTokenToDecimal(event.params.amount0, token1.decimals)
+  let amount1 = convertTokenToDecimal(event.params.amount1, token1.decimals)
 
   // fees collected in token amounts
   cellar.feesCollectedToken0 = cellar.feesCollectedToken0.plus(amount0)
-  cellar.feesCollectedToken1 = cellar.feesCollectedToken0.plus(amount1)
+  cellar.feesCollectedToken1 = cellar.feesCollectedToken1.plus(amount1)
 
   // fees collected in USD
   cellar.feesCollectedTokenUSD = amount0.times(token0.derivedETH.times(bundle.ethPriceUSD))
