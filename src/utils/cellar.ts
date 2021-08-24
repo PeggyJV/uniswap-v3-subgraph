@@ -75,6 +75,7 @@ export function saveNFLPs(cellarContract: CellarContract, cellar: Cellar): NFLP[
     let nflp = new NFLP(tick.value0.toString())
     nflp.tickUpper = BigInt.fromI32(tick.value1)
     nflp.tickLower = BigInt.fromI32(tick.value2)
+    nflp.cellar = cellar.id
     nflp.save()
 
     nflps.push(nflp)
@@ -98,6 +99,7 @@ export function upsertNFLPs(cellarContract: CellarContract, cellar: Cellar): NFL
       nflp = new NFLP(tick.value0.toString())
       nflp.tickUpper = BigInt.fromI32(tick.value1)
       nflp.tickLower = BigInt.fromI32(tick.value2)
+      nflp.cellar = cellar.id
       nflp.save()
     }
 
