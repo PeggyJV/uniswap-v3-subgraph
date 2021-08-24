@@ -55,11 +55,11 @@ export function handleRemovedLiquidity(event: RemovedLiquidity): void {
 
 export function handleRebalance(call: RebalanceCall): void {
   log.info('ERT: invoked handleRebalance', [])
-  let cellarContract = CellarContract.bind(call.from)
+  let cellarContract = CellarContract.bind(call.to)
   let nflpManager = NonfungiblePositionManager.bind(NONFUNGIBLE_POSITION_MANAGER)
   let bundle = loadBundle()
 
-  let cellar = loadCellar(call.from.toHexString())
+  let cellar = loadCellar(call.to.toHexString())
   let nflps = saveNFLPs(cellarContract, cellar)
   let tokenIds = nflps.map<BigInt>(nflp => BigInt.fromString(nflp.id))
   calculateCurrentTvl(nflpManager, bundle, cellar, tokenIds)

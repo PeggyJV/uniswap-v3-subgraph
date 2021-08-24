@@ -24,9 +24,11 @@ import {
 import { convertTokenToDecimal } from '../utils'
 
 export function loadCellar(cellarAddress: string): Cellar {
-  log.info('ERT: invoked loadCellar', [])
+  log.info('ERT: invoked loadCellar, address: {}', [cellarAddress])
   let cellar = Cellar.load(cellarAddress)
-  if (cellar == null) throw new Error('Could not find Cellar:'.concat(cellarAddress))
+  if (cellar == null) {
+    throw new Error('Could not find Cellar:'.concat(cellarAddress))
+  }
 
   return cellar as Cellar
 }
@@ -191,7 +193,7 @@ export function calculateCurrentTvl(
 
     let pos = position.value
     log.info('ERT: Position id: {}, token0: {}, token1: {}', [
-      nflpIds.toString(),
+      nflpIds[i].toString(),
       pos.value10.toString(),
       pos.value11.toString()
     ])
