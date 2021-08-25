@@ -817,6 +817,7 @@ type Cellar @entity {
   # Lifetime Deposits
   totalDepositAmount0: BigDecimal!
   totalDepositAmount1: BigDecimal!
+  totalDepositUSD: BigDecimal!
 
   # TVL
   totalValueLockedToken0: BigDecimal!

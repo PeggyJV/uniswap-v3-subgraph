@@ -46,6 +46,7 @@ export function initCellar(contract: CellarContract, cellarAddress: string): Cel
 
   cellar.totalDepositAmount0 = ZERO_BD
   cellar.totalDepositAmount1 = ZERO_BD
+  cellar.totalDepositUSD = ZERO_BD
   cellar.totalValueLockedToken0 = ZERO_BD
   cellar.totalValueLockedToken1 = ZERO_BD
   cellar.totalValueLockedUSD = ZERO_BD

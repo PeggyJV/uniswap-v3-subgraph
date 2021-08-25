@@ -37,7 +37,7 @@ export function handleAddedLiquidity(event: AddedLiquidity): void {
   let tokenIds = nflps.map<BigInt>(nflp => BigInt.fromString(nflp.id))
   calculateCurrentTvl(nflpManager, bundle, cellar as Cellar, tokenIds)
 
-  // TODO: move to cellar util?
+  // TODO: move to cellar util?, check if calculateCurrentTvl is using Token
   // track lifetime deposits
   let token0 = Token.load(cellar.token0)
   let token1 = Token.load(cellar.token1)
@@ -46,6 +46,10 @@ export function handleAddedLiquidity(event: AddedLiquidity): void {
   let amount1 = convertTokenToDecimal(event.params.amount1, token1.decimals)
   cellar.totalDepositAmount0 = cellar.totalDepositAmount0.plus(amount0)
   cellar.totalDepositAmount1 = cellar.totalDepositAmount1.plus(amount1)
+
+  let amount0USD = amount0.times(token0.derivedETH).times(bundle.ethPriceUSD)
+  let amount1USD = amount1.times(token1.derivedETH).times(bundle.ethPriceUSD)
+  cellar.totalDepositUSD = cellar.totalDepositUSD.plus(amount0USD).plus(amount1USD)
 
   cellar.save()
 }
