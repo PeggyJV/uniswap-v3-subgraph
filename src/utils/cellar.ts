@@ -44,6 +44,8 @@ export function initCellar(contract: CellarContract, cellarAddress: string): Cel
   cellar.pool = '0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8'
   cellar.feeTier = BigInt.fromI32(3000)
 
+  cellar.totalDepositAmount0 = ZERO_BD
+  cellar.totalDepositAmount1 = ZERO_BD
   cellar.totalValueLockedToken0 = ZERO_BD
   cellar.totalValueLockedToken1 = ZERO_BD
   cellar.totalValueLockedUSD = ZERO_BD
