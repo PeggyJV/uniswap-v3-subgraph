@@ -7,7 +7,7 @@ import {
   RemovedLiquidity,
   RebalanceCall,
 } from "../types/Cellar/CellarContract"
-import { Cellar } from "../types/schema"
+import { Cellar, Token } from "../types/schema"
 import { NONFUNGIBLE_POSITION_MANAGER } from "../utils/constants"
 import {
   calculateCurrentTvl,
@@ -17,6 +17,7 @@ import {
   upsertNFLPs,
 } from '../utils/cellar'
 import { loadBundle } from '../utils/pricing'
+import { convertTokenToDecimal } from '../utils'
 
 export function handleAddedLiquidity(event: AddedLiquidity): void {
   log.info('ERT: invoked handleAddedLiquidity', [])
@@ -36,9 +37,13 @@ export function handleAddedLiquidity(event: AddedLiquidity): void {
   let tokenIds = nflps.map<BigInt>(nflp => BigInt.fromString(nflp.id))
   calculateCurrentTvl(nflpManager, bundle, cellar as Cellar, tokenIds)
 
+  // TODO: move to cellar util?
   // track lifetime deposits
-  let amount0 = event.params.amount0.toBigDecimal()
-  let amount1 = event.params.amount1.toBigDecimal()
+  let token0 = Token.load(cellar.token0)
+  let token1 = Token.load(cellar.token1)
+
+  let amount0 = convertTokenToDecimal(event.params.amount0, token0.decimals)
+  let amount1 = convertTokenToDecimal(event.params.amount1, token1.decimals)
   cellar.totalDepositAmount0 = cellar.totalDepositAmount0.plus(amount0)
   cellar.totalDepositAmount1 = cellar.totalDepositAmount1.plus(amount1)
 
