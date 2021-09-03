@@ -11,9 +11,9 @@ import {
   initCellar,
   loadCellar,
   upsertNFLPs,
-  // TODO REMOVE
-  initUSDC,
-  initWETH,
+  // TODO: REMOVE
+  // initUSDC,
+  // initWETH,
 } from '../utils/cellar'
 import { loadBundle } from '../utils/pricing'
 import { convertTokenToDecimal } from '../utils'
@@ -41,8 +41,10 @@ export function handleAddedLiquidity(event: AddedLiquidity): void {
   // TODO: DRY UP
   let token0 = Token.load(cellar.token0)
   let token1 = Token.load(cellar.token1)
-  if (token0 == null) { token0 = initUSDC() }
-  if (token1 == null) { token1 = initWETH() }
+
+  // TODO: REMOVE
+  // if (token0 == null) { token0 = initUSDC() }
+  // if (token1 == null) { token1 = initWETH() }
   log.debug('token0: {}, token1: {}', [cellar.token0, cellar.token1])
 
   let amount0 = convertTokenToDecimal(event.params.amount0, token0.decimals)

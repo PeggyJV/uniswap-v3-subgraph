@@ -37,9 +37,9 @@ export function loadBundle(): Bundle {
   let bundle = Bundle.load('1')
 
   // TODO: Remove / comment out for local dev
-  if (bundle == null) {
+  if (bundle == null || bundle.ethPriceUSD.equals(ZERO_BD)) {
     bundle = new Bundle('1')
-    bundle.ethPriceUSD = BigDecimal.fromString('3809.20')
+    bundle.ethPriceUSD = BigDecimal.fromString('3800.00')
     bundle.save()
   }
 
