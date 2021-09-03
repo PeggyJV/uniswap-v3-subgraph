@@ -798,3 +798,76 @@ type TokenHourData @entity {
   # close price USD
   close: BigDecimal!
 }
+
+type Cellar @entity {
+  # Cellar Ethereum Contract Address
+  id: ID!
+
+  # Target Pool Address
+  pool: Pool!
+  feeTier: BigInt!
+
+  # Performance fee
+  managementFee: BigInt!
+
+  # NFLPs
+  nflps: [NFLP!]! @derivedFrom(field: "cellar")
+
+  # Tokens
+  token0: Token! # address
+  token1: Token! # address
+
+  # Lifetime Deposits
+  totalDepositAmount0: BigDecimal!
+  totalDepositAmount1: BigDecimal!
+  totalDepositUSD: BigDecimal!
+
+  # TVL
+  totalValueLockedToken0: BigDecimal!
+  totalValueLockedToken1: BigDecimal!
+  totalValueLockedUSD: BigDecimal!
+
+  # Total fees collected from pool
+  feesCollectedToken0: BigDecimal!
+  feesCollectedToken1: BigDecimal!
+  feesCollectedUSD: BigDecimal!
+
+  # Fees collected - performance fee
+  feesReinvestedToken0: BigDecimal!
+  feesReinvestedToken1: BigDecimal!
+  feesReinvestedUSD: BigDecimal!
+}
+
+# Represents a Rebalance or Reinvest call
+type CellarInvest @entity {
+  id: ID!
+  cellar: Cellar!
+  type: String! # rebalance | reinvest
+
+  date: Int!
+
+  feesCollected0: BigDecimal!
+  feesCollected1: BigDecimal!
+  feesCollectedUSD: BigDecimal!
+
+  feesReinvested0: BigDecimal!
+  feesReinvested1: BigDecimal!
+  feesReinvestedUSD: BigDecimal!
+
+  amount0: BigDecimal!
+  amount1: BigDecimal!
+  amountUSD: BigDecimal!
+}
+
+# TODO: rename this to CellarPosition?
+type NFLP @entity {
+  # tokenId
+  id: ID!
+  
+  # Cellar reference
+  cellar: Cellar!
+
+  # Tick ranges
+  tickUpper: BigInt!
+  tickLower: BigInt!
+}

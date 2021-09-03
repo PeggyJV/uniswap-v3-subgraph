@@ -33,6 +33,19 @@ export let WHITELIST_TOKENS: string[] = [
   '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9' // AAVE
 ]
 
+export function loadBundle(): Bundle {
+  let bundle = Bundle.load('1')
+
+  // TODO: Remove / comment out for local dev
+  if (bundle == null || bundle.ethPriceUSD.equals(ZERO_BD)) {
+    bundle = new Bundle('1')
+    bundle.ethPriceUSD = BigDecimal.fromString('3800.00')
+    bundle.save()
+  }
+
+  return bundle as Bundle
+}
+
 let MINIMUM_ETH_LOCKED = BigDecimal.fromString('52')
 
 let Q192 = 2 ** 192

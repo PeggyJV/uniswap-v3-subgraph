@@ -6,14 +6,14 @@ import {
   NonfungiblePositionManager,
   Transfer
 } from '../types/NonfungiblePositionManager/NonfungiblePositionManager'
-import { Bundle, Pool, Position, PositionSnapshot, Token } from '../types/schema'
+import { Bundle, Pool, Position, PositionSnapshot, Token, NFLP, Cellar } from '../types/schema'
 import {
   ADDRESS_ZERO,
   factoryContract,
   ZERO_BD,
   ZERO_BI
 } from '../utils/constants'
-import { Address, BigInt, ethereum, log } from '@graphprotocol/graph-ts'
+import { Address, BigDecimal, BigInt, ethereum, log } from '@graphprotocol/graph-ts'
 import { convertTokenToDecimal, loadTransaction } from '../utils'
 
 function getPosition(event: ethereum.Event, tokenId: BigInt): Position | null {
