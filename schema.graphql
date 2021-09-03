@@ -807,6 +807,9 @@ type Cellar @entity {
   pool: Pool!
   feeTier: BigInt!
 
+  # Performance fee
+  managementFee: BigInt!
+
   # NFLPs
   nflps: [NFLP!]! @derivedFrom(field: "cellar")
 
@@ -824,10 +827,15 @@ type Cellar @entity {
   totalValueLockedToken1: BigDecimal!
   totalValueLockedUSD: BigDecimal!
 
-  # Lifetime fees collected
+  # Total fees collected from pool
   feesCollectedToken0: BigDecimal!
   feesCollectedToken1: BigDecimal!
-  feesCollectedTokenUSD: BigDecimal!
+  feesCollectedUSD: BigDecimal!
+
+  # Fees collected - performance fee
+  feesReinvestedToken0: BigDecimal!
+  feesReinvestedToken1: BigDecimal!
+  feesReinvestedUSD: BigDecimal!
 }
 
 # TODO: rename this to cellar NFLP? not to be confused with position
@@ -838,15 +846,27 @@ type NFLP @entity {
   # Cellar reference
   cellar: Cellar!
 
-  # Tokens
-  token0: Token! # address
-  token1: Token! # address
-
   # Tick ranges
   tickUpper: BigInt!
   tickLower: BigInt!
+}
 
-  # Amount deposited
-  # amount0: BigInt!
-  # amount1: BigInt!
+type CellarInvest @entity {
+  id: ID!
+  cellar: Cellar!
+  type: String!
+
+  date: Int!
+
+  feesCollected0: BigDecimal!
+  feesCollected1: BigDecimal!
+  feesCollectedUSD: BigDecimal!
+
+  feesReinvested0: BigDecimal!
+  feesReinvested1: BigDecimal!
+  feesReinvestedUSD: BigDecimal!
+
+  amount0: BigDecimal!
+  amount1: BigDecimal!
+  amountUSD: BigDecimal!
 }

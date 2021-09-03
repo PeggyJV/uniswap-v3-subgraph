@@ -190,40 +190,6 @@ export function handleCollect(event: Collect): void {
   // position.save()
 
   // savePositionSnapshot(position!, event)
-  let tokenId = event.params.tokenId
-  let _nflp = NFLP.load(tokenId.toString()) as NFLP
-  if (_nflp == null) {
-    return
-  }
-  let nflp = _nflp as NFLP
-
-  let _cellar = Cellar.load(nflp.cellar)
-  if (_cellar == null) {
-    return 
-  }
-  let cellar = _cellar as Cellar
-
-  // TODO: dont save tokens on NFLP, fetch from cellar
-  let token0 = Token.load(cellar.token0)
-  let token1 = Token.load(cellar.token1)
-  let bundle = Bundle.load('1')
-
-  let amount0 = convertTokenToDecimal(event.params.amount0, token0.decimals)
-  let amount1 = convertTokenToDecimal(event.params.amount1, token1.decimals)
-
-  log.info('ERT: Collect Event tokenId: {}, a0: {}, a1: {}', [event.params.tokenId.toString(), event.params.amount0.toString(), event.params.amount1.toString()])
-
-  // fees collected in token amounts
-  cellar.feesCollectedToken0 = cellar.feesCollectedToken0.plus(amount0)
-  cellar.feesCollectedToken1 = cellar.feesCollectedToken1.plus(amount1)
-
-  // fees collected in USD
-  let val0 = amount0.times(token0.derivedETH).times(bundle.ethPriceUSD)
-  let val1 = amount1.times(token1.derivedETH).times(bundle.ethPriceUSD)
-  log.info('ERT: Fees Collected: t0: {}, t1: {}', [val0.toString(), val1.toString()])
-  cellar.feesCollectedTokenUSD = cellar.feesCollectedTokenUSD.plus(val0).plus(val1)
-
-  cellar.save()
 }
 
 export function handleTransfer(event: Transfer): void {
