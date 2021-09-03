@@ -838,23 +838,11 @@ type Cellar @entity {
   feesReinvestedUSD: BigDecimal!
 }
 
-# TODO: rename this to cellar NFLP? not to be confused with position
-type NFLP @entity {
-  # tokenId
-  id: ID!
-  
-  # Cellar reference
-  cellar: Cellar!
-
-  # Tick ranges
-  tickUpper: BigInt!
-  tickLower: BigInt!
-}
-
+# Represents a Rebalance or Reinvest call
 type CellarInvest @entity {
   id: ID!
   cellar: Cellar!
-  type: String!
+  type: String! # rebalance | reinvest
 
   date: Int!
 
@@ -869,4 +857,17 @@ type CellarInvest @entity {
   amount0: BigDecimal!
   amount1: BigDecimal!
   amountUSD: BigDecimal!
+}
+
+# TODO: rename this to CellarPosition?
+type NFLP @entity {
+  # tokenId
+  id: ID!
+  
+  # Cellar reference
+  cellar: Cellar!
+
+  # Tick ranges
+  tickUpper: BigInt!
+  tickLower: BigInt!
 }

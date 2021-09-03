@@ -35,11 +35,12 @@ export let WHITELIST_TOKENS: string[] = [
 
 export function loadBundle(): Bundle {
   let bundle = Bundle.load('1')
+
+  // TODO: Remove / comment out for local dev
   if (bundle == null) {
     bundle = new Bundle('1')
-    bundle.ethPriceUSD = BigDecimal.fromString('3324.800048995310632809618905089932')
+    bundle.ethPriceUSD = BigDecimal.fromString('3809.20')
     bundle.save()
-    //throw new Error('Missing Bundle')
   }
 
   return bundle as Bundle

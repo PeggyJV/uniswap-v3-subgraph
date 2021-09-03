@@ -11,11 +11,17 @@ import {
   initCellar,
   loadCellar,
   upsertNFLPs,
+  // TODO REMOVE
+  initUSDC,
+  initWETH,
 } from '../utils/cellar'
 import { loadBundle } from '../utils/pricing'
 import { convertTokenToDecimal } from '../utils'
 
-let FEE_DEONOMINATOR = BigInt.fromI32(10000)
+// Hardcoded on the contract, used to figure out what the total collected fees were from the pool
+// TODO: should we fix the contract to emit the right value?
+
+let FEE_DENOMINATOR = BigInt.fromI32(10000)
 
 export function handleAddedLiquidity(event: AddedLiquidity): void {
   log.debug('Invoked handleAddedLiquidity', [])
@@ -35,6 +41,8 @@ export function handleAddedLiquidity(event: AddedLiquidity): void {
   // TODO: DRY UP
   let token0 = Token.load(cellar.token0)
   let token1 = Token.load(cellar.token1)
+  if (token0 == null) { token0 = initUSDC() }
+  if (token1 == null) { token1 = initWETH() }
   log.debug('token0: {}, token1: {}', [cellar.token0, cellar.token1])
 
   let amount0 = convertTokenToDecimal(event.params.amount0, token0.decimals)
@@ -91,8 +99,8 @@ export function handleRebalance(event: Rebalance): void {
   ])
 
   // Calculate total fees from 'performance fee'
-  let totalFees0 = event.params.fees0.times(FEE_DEONOMINATOR).div(cellar.managementFee)
-  let totalFees1 = event.params.fees1.times(FEE_DEONOMINATOR).div(cellar.managementFee)
+  let totalFees0 = event.params.fees0.times(FEE_DENOMINATOR).div(cellar.managementFee)
+  let totalFees1 = event.params.fees1.times(FEE_DENOMINATOR).div(cellar.managementFee)
 
   // Convert all amounts to decimal
   let fees0 = convertTokenToDecimal(totalFees0, token0.decimals)
@@ -168,8 +176,8 @@ export function handleReinvest(event: Rebalance): void {
   ])
 
   // Calculate total fees from 'performance fee'
-  let totalFees0 = event.params.fees0.times(FEE_DEONOMINATOR).div(cellar.managementFee)
-  let totalFees1 = event.params.fees1.times(FEE_DEONOMINATOR).div(cellar.managementFee)
+  let totalFees0 = event.params.fees0.times(FEE_DENOMINATOR).div(cellar.managementFee)
+  let totalFees1 = event.params.fees1.times(FEE_DENOMINATOR).div(cellar.managementFee)
 
   // Convert all amounts to decimal
   let fees0 = convertTokenToDecimal(totalFees0, token0.decimals)

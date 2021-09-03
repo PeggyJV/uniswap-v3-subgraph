@@ -129,29 +129,8 @@ export function upsertNFLPs(cellarContract: CellarContract, cellar: Cellar): NFL
   return nflps
 }
 
-export function initWETH (): Token {
-  let t = new Token('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2');
-
-  t.symbol = 'WETH'
-  t.name = 'Wrapped Ether'
-  t.decimals = BigInt.fromI32(18)
-  t.totalSupply = BigInt.fromI32(19376)
-  t.volume = ZERO_BD
-  t.volumeUSD = ZERO_BD
-  t.untrackedVolumeUSD = ZERO_BD
-  t.feesUSD = ZERO_BD
-  t.txCount = ZERO_BI
-  t.poolCount = ZERO_BI
-  t.totalValueLocked = ZERO_BD
-  t.totalValueLockedUSD = ZERO_BD
-  t.totalValueLockedUSDUntracked = ZERO_BD
-  t.derivedETH = ONE_BD
-  t.whitelistPools = []
-
-  t.save()
-  return t
-}
-
+// These init fns are used for initializing entities during local dev
+// to avoid unnecessary grafts and to keep a tight feedback loop
 export function initPool(cellar: Cellar): Pool {
   log.debug('Initializing pool', [])
   let p = new Pool(cellar.pool)
@@ -187,6 +166,29 @@ export function initPool(cellar: Cellar): Pool {
 
   p.save()
   return p
+}
+
+export function initWETH (): Token {
+  let t = new Token('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2');
+
+  t.symbol = 'WETH'
+  t.name = 'Wrapped Ether'
+  t.decimals = BigInt.fromI32(18)
+  t.totalSupply = BigInt.fromI32(19376)
+  t.volume = ZERO_BD
+  t.volumeUSD = ZERO_BD
+  t.untrackedVolumeUSD = ZERO_BD
+  t.feesUSD = ZERO_BD
+  t.txCount = ZERO_BI
+  t.poolCount = ZERO_BI
+  t.totalValueLocked = ZERO_BD
+  t.totalValueLockedUSD = ZERO_BD
+  t.totalValueLockedUSDUntracked = ZERO_BD
+  t.derivedETH = ONE_BD
+  t.whitelistPools = []
+
+  t.save()
+  return t
 }
 
 export function initUSDT (): Token {
