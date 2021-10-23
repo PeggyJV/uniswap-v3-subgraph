@@ -15,6 +15,7 @@ import {
 } from '../utils/constants'
 import { Address, BigInt, ethereum, log } from '@graphprotocol/graph-ts'
 import { convertTokenToDecimal, loadTransaction } from '../utils'
+import { isTrackedPool } from '../utils/tracked-pools'
 
 function getPosition(event: ethereum.Event, tokenId: BigInt): Position | null {
   let position = Position.load(tokenId.toString())
@@ -115,6 +116,7 @@ export function handleIncreaseLiquidity(event: IncreaseLiquidity): void {
   if (position == null) {
     return
   }
+  if (!isTrackedPool(position.pool)) { return }
 
   // temp fix
   if (Address.fromString(position.pool).equals(Address.fromHexString('0x8fe8d9bb8eeba3ed688069c3d6b556c9ca258248'))) {
@@ -144,6 +146,7 @@ export function handleDecreaseLiquidity(event: DecreaseLiquidity): void {
   if (position == null) {
     return
   }
+  if (!isTrackedPool(position.pool)) { return }
 
   // temp fix
   if (Address.fromString(position.pool).equals(Address.fromHexString('0x8fe8d9bb8eeba3ed688069c3d6b556c9ca258248'))) {
@@ -172,6 +175,7 @@ export function handleCollect(event: Collect): void {
   if (position == null) {
     return
   }
+  if (!isTrackedPool(position.pool)) { return }
 
   // temp fix
   if (Address.fromString(position.pool).equals(Address.fromHexString('0x8fe8d9bb8eeba3ed688069c3d6b556c9ca258248'))) {
@@ -198,6 +202,7 @@ export function handleTransfer(event: Transfer): void {
   if (position == null) {
     return
   }
+  if (!isTrackedPool(position.pool)) { return }
 
   // Check if pool exists - if not, create
   position.owner = event.params.to

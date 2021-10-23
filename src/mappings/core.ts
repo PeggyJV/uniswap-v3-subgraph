@@ -149,7 +149,10 @@ function updateSingleTickVolume(
 }
 
 export function handleInitialize(event: Initialize): void {
-  let pool = Pool.load(event.address.toHexString())
+  let poolAddress = event.address.toHexString()
+  if (!isTrackedPool(poolAddress)) { return }
+
+  let pool = Pool.load(poolAddress)
   pool.sqrtPrice = event.params.sqrtPriceX96
   pool.tick = BigInt.fromI32(event.params.tick)
   // update token prices
@@ -173,8 +176,10 @@ export function handleInitialize(event: Initialize): void {
 }
 
 export function handleMint(event: MintEvent): void {
-  let bundle = Bundle.load('1')
   let poolAddress = event.address.toHexString()
+  if (!isTrackedPool(poolAddress)) { return }
+
+  let bundle = Bundle.load('1')
   let pool = Pool.load(poolAddress)
   let factory = Factory.load(FACTORY_ADDRESS)
 
@@ -305,8 +310,10 @@ export function handleMint(event: MintEvent): void {
 }
 
 export function handleBurn(event: BurnEvent): void {
-  let bundle = Bundle.load('1')
   let poolAddress = event.address.toHexString()
+  if (!isTrackedPool(poolAddress)) { return }
+
+  let bundle = Bundle.load('1')
   let pool = Pool.load(poolAddress)
   let factory = Factory.load(FACTORY_ADDRESS)
 
@@ -382,14 +389,12 @@ export function handleBurn(event: BurnEvent): void {
   let lowerTick = Tick.load(lowerTickId)
   let upperTick = Tick.load(upperTickId)
 
-  if (isTrackedPool(poolAddress)) {
-    if (lowerTick === null) {
-      lowerTick = createTick(lowerTickId, event.params.tickLower, pool.id, event)
-    }
+  if (lowerTick === null) {
+    lowerTick = createTick(lowerTickId, event.params.tickLower, pool.id, event)
+  }
 
-    if (upperTick === null) {
-      upperTick = createTick(upperTickId, event.params.tickUpper, pool.id, event)
-    }
+  if (upperTick === null) {
+    upperTick = createTick(upperTickId, event.params.tickUpper, pool.id, event)
   }
 
   let amount = event.params.amount
@@ -432,9 +437,12 @@ export function handleBurn(event: BurnEvent): void {
 }
 
 export function handleSwap(event: SwapEvent): void {
+  let poolAddress = event.address.toHexString()
+  if (!isTrackedPool(poolAddress)) { return }
+
   let bundle = Bundle.load('1')
   let factory = Factory.load(FACTORY_ADDRESS)
-  let pool = Pool.load(event.address.toHexString())
+  let pool = Pool.load(poolAddress)
 
   // hot fix for bad pricing
   if (pool.id == '0x9663f2ca0454accad3e094448ea6f77443880454') {
@@ -646,8 +654,11 @@ export function handleSwap(event: SwapEvent): void {
 }
 
 export function handleFlash(event: FlashEvent): void {
+  let poolAddress = event.address.toHexString()
+  if (!isTrackedPool(poolAddress)) { return }
+
   // update fee growth
-  let pool = Pool.load(event.address.toHexString())
+  let pool = Pool.load(poolAddress)
   let poolContract = PoolABI.bind(event.address)
   let feeGrowth0Result = poolContract.try_feeGrowthGlobal0X128();
   if (!feeGrowth0Result.reverted) {
