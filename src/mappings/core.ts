@@ -24,6 +24,7 @@ import {
   updateUniswapDayData,
 } from '../utils/intervalUpdates'
 import { createTick, feeTierToTickSpacing } from '../utils/tick'
+import { isTrackedPool } from '../utils/tracked-pools'
 
 let MAX_TICK = BigInt.fromI32(887282);
 let MIN_TICK = MAX_TICK.times(BigInt.fromI32(-1))
@@ -50,9 +51,13 @@ function updateTickFeeVarsAndSave(tick: Tick, event: ethereum.Event): void {
 }
 
 function loadTickUpdateFeeVarsAndSave(tickIdx: i32, event: ethereum.Event): void {
-  let poolAddress = event.address
+  let poolAddress = event.address.toHexString()
+  if (isTrackedPool(poolAddress) === false) {
+    // bail if we are not tracking this pool, see src/utils/tracked-pools for list
+    return
+  }
+
   let tickId = poolAddress
-    .toHexString()
     .concat('#')
     .concat(tickIdx.toString())
 
@@ -60,7 +65,7 @@ function loadTickUpdateFeeVarsAndSave(tickIdx: i32, event: ethereum.Event): void
   if (tick !== null) {
     // updateTickFeeVarsAndSave(tick!, event)
   } else {
-    createTick(tickId, tickIdx, poolAddress.toHexString(), event);
+    createTick(tickId, tickIdx, poolAddress, event);
   }
 }
 
@@ -377,12 +382,14 @@ export function handleBurn(event: BurnEvent): void {
   let lowerTick = Tick.load(lowerTickId)
   let upperTick = Tick.load(upperTickId)
 
-  if (lowerTick === null) {
-    lowerTick = createTick(lowerTickId, event.params.tickLower, pool.id, event)
-  }
+  if (isTrackedPool(poolAddress)) {
+    if (lowerTick === null) {
+      lowerTick = createTick(lowerTickId, event.params.tickLower, pool.id, event)
+    }
 
-  if (upperTick === null) {
-    upperTick = createTick(upperTickId, event.params.tickUpper, pool.id, event)
+    if (upperTick === null) {
+      upperTick = createTick(upperTickId, event.params.tickUpper, pool.id, event)
+    }
   }
 
   let amount = event.params.amount
